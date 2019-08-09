@@ -1,7 +1,7 @@
 FROM jruby:9-alpine
 
 # Add necessary packages
-RUN apk --update add bash tzdata build-base ca-certificates
+RUN apk --update add bash tzdata build-base ca-certificates git
 
 # Create the run user and group
 RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
