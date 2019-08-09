@@ -1,7 +1,7 @@
-FROM ruby:2.6.3-alpine3.10
+FROM jruby:9-alpine
 
 # Add necessary packages
-RUN apk --update add bash tzdata build-base nodejs sqlite-dev mariadb-dev zlib-dev libxml2-dev libxslt-dev libffi-dev ca-certificates
+RUN apk --update add bash tzdata build-base ca-certificates
 
 # Create the run user and group
 RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
@@ -11,7 +11,7 @@ ENV TZ=UTC
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Add necessary gems
-RUN gem install bundler -v 1.17.3
+RUN gem install bundler
 
 # Specify home 
 ENV APP_HOME /pool-eds-ws
@@ -21,7 +21,7 @@ WORKDIR $APP_HOME
 ADD Gemfile Gemfile.lock .ruby-gemset ./
 RUN rm -rf tmp/cache/*
 
-RUN bundle install --jobs=4 --without=["development" "test"] --no-cache --force
+RUN bundle install --jobs=4 --without=["development" "test"] --force
 
 # install the app and bundle
 COPY . $APP_HOME
