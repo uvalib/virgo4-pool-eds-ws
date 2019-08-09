@@ -1,2 +1,4 @@
 .idea
 .byebug_history
+*.log
+.env

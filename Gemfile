@@ -5,11 +5,10 @@ gem 'puma'
 gem 'tilt'
 gem 'jbuilder'
 gem 'tilt-jbuilder'
-
-
-gem 'ebsco-eds'
-
+gem 'httparty'
+gem 'virgo_parser', github: 'uvalib/virgo4-ruby-parser'
 
 group :development do
-  gem 'byebug'
+  gem 'pry-debugger-jruby'
+  gem 'dotenv'
 end

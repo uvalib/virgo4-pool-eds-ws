@@ -1,9 +1,9 @@
 require_relative '../config/cuba'
 
 Cuba.define do
-  on post do
+  on get do
     on 'api/search' do
-      @results = {test: 'woo'}
+      @eds = EDSSearch.new req.params
       res.write partial("search_result")
     end
   end
