@@ -3,7 +3,7 @@ require_relative '../config/cuba'
 Cuba.define do
   on get do
     on 'api/search' do
-      @eds = EDSSearch.new req.params
+      @eds = EDS::Search.new req.params
       res.write partial("search_result")
     end
   end
