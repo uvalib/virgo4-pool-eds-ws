@@ -11,5 +11,6 @@ gem 'virgo_parser', github: 'uvalib/virgo4-ruby-parser'
 group :development do
   gem 'dotenv'
   gem 'pry-debugger-jruby'
-  gem 'rspec'
+  gem 'cutest'
+  gem 'rack-test'
 end
