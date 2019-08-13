@@ -8,7 +8,7 @@ class EDS
   @@lock = Mutex.new
   def login
     @@lock.synchronize do
-      puts 'Logging in'
+      $logger.debug 'Logging in'
       auth = self.class.post('/authservice/rest/UIDAuth',
                              body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
                              headers: base_headers
@@ -50,17 +50,17 @@ class EDS
       time = Benchmark.realtime do
         response = yield
       end
-      puts "EDS Response: #{time * 1000}ms"
+      $logger.debug "EDS Response: #{time * 1000}ms"
       return response
 
 
     rescue => e
       # catch a stale login?
       if e.message == 'retry'
-        puts 'Retrying API call'
+        $logger.debug 'Retrying API call'
         return yield
       end
-      puts e
+      $logger.error e
       return []
 
     end
@@ -72,7 +72,7 @@ class EDS
 
   def check_session response
     if response.code == 400
-      puts 'EDS session timed out'
+      $logger.debug 'EDS session timed out'
       login
       raise 'retry'
     end
