@@ -1,5 +1,5 @@
-json.service_url @eds.request['eds_params']
-json.pagination @eds.request['pagination']
+json.service_url @eds
+json.pagination @eds.params['pagination']
 json.record_list
 json.available_facets
 json.facet_list

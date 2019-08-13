@@ -16,7 +16,7 @@ Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
 
 scope do
   test 'Search' do
-    get '/api/search', {query: 'title:{bananas}'}
+    post '/api/search', {query: 'title:{bananas}'}
     assert last_response.ok?
   end
 end

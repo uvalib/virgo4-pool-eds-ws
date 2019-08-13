@@ -72,7 +72,7 @@ class EDS
 
   def check_session response
     if response.code == 400
-      $logger.debug 'EDS session timed out'
+      $logger.debug response['ErrorDescription'] || 'EDS session timed out'
       login
       raise 'retry'
     end
