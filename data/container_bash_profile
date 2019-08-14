@@ -9,3 +9,6 @@ export PS1='(pool-eds-ws:$HOST) $PWD$ '
 
 # command editor
 set -o vi
+
+# path to include jruby stuff
+export PATH=$PATH:/opt/jruby/bin:/usr/share/jruby/bin

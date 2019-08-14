@@ -1,0 +1,6 @@
+.gitignore
+.idea
+env.*
+pipeline
+package
+scripts/docker
