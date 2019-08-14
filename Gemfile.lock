@@ -28,11 +28,13 @@ GEM
       concurrent-ruby (~> 1.0)
     jbuilder (2.9.1)
       activesupport (>= 4.2.0)
+    jrjackson (0.4.9-java)
     method_source (0.9.2)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0331)
     minitest (5.11.3)
+    multi_json (1.13.1)
     multi_xml (0.6.0)
     nio4r (2.4.0-java)
     pry (0.11.3-java)
@@ -45,6 +47,8 @@ GEM
     puma (4.1.0-java)
       nio4r (~> 2.0)
     rack (2.0.7)
+    rack-post-body-to-params (0.1.8)
+      activesupport (>= 2.3)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     ruby-debug-base (0.10.6-java)
@@ -67,8 +71,11 @@ DEPENDENCIES
   dotenv
   httparty
   jbuilder
+  jrjackson
+  multi_json
   pry-debugger-jruby
   puma
+  rack-post-body-to-params
   rack-test
   tilt
   tilt-jbuilder

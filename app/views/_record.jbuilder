@@ -1,5 +1,6 @@
-# A single Record (partial or detailed)
-
 json.fields do
- json.record_field
+  field = Field.new(record)
+  json.array! Field::LIST do |name|
+    json.merge! field.get(name)
+  end
 end

@@ -6,6 +6,7 @@ gem 'tilt'
 gem 'jbuilder'
 gem 'tilt-jbuilder'
 gem 'httparty'
+gem 'rack-post-body-to-params'
 gem 'virgo_parser', github: 'uvalib/virgo4-ruby-parser'
 
 group :development do

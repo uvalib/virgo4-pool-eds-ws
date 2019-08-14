@@ -50,9 +50,8 @@ class EDS
       time = Benchmark.realtime do
         response = yield
       end
-      $logger.debug "EDS Response: #{time * 1000}ms"
+      $logger.debug "EDS Response: #{time}"
       return response
-
 
     rescue => e
       # catch a stale login?
@@ -72,7 +71,7 @@ class EDS
 
   def check_session response
     if response.code == 400
-      $logger.debug response['ErrorDescription'] || 'EDS session timed out'
+      $logger.debug response[:ErrorDescription] || 'EDS session timed out'
       login
       raise 'retry'
     end

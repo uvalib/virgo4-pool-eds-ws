@@ -12,6 +12,9 @@ if ENV['RACK_ENV'] != 'production'
   $logger.level = Logger::DEBUG
 end
 
+require 'rack/post-body-to-params'
+use Rack::PostBodyToParams
+
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
 
 run Cuba
