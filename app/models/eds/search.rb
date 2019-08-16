@@ -35,7 +35,7 @@ class EDS::Search < EDS
         elapsed_ms: search_time,
         available_facets: available_facets,
         confidence: 'low'
-      }.symbolize_keys
+      }.deep_symbolize_keys
 
     end
   end
@@ -47,6 +47,7 @@ class EDS::Search < EDS
       searchmode: 'all',
       resultsperpage: params['pagination']['rows'],
       sort: 'relavance',
+      #view: 'detailed',
       highlight: 'n',
       includeimagequickview: 'y'
     }

@@ -1,6 +1,6 @@
 json.fields do
   field = Field.new(record)
-  json.array! Field::LIST do |name|
-    json.merge! field.get(name)
+  json.array! field.list do |data|
+    json.merge! data
   end
 end
