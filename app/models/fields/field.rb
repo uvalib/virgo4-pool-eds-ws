@@ -78,13 +78,13 @@ class Field
     end
   end
   def pub_type
-    value = result.dig :Header, :PubType
+    value = record.dig :Header, :PubType
     {name: 'pub_type', label: 'Publication Type',
      value: value }.merge(detailed_text)
   end
 
   def link
-    value = record[:Plink]
+    value = record[:PLink]
     {name: 'ebsco_url', label: 'More',
      value: value }.merge(basic_url)
   end
