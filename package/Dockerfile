@@ -1,13 +1,14 @@
 FROM alpine:3.10
 
 # add necessary packages
-RUN apk update && apk upgrade && apk add bash tzdata build-base ca-certificates git
+RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git
 
 # install java 11 JDK
 RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # install jruby
-RUN apk --no-cache add jruby
+ADD .ruby-version /tmp
+RUN apk --no-cache add jruby=~$(cat /tmp/.ruby-version | awk -F- '{print $2}')
 
 # create the run user and group
 RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
@@ -26,7 +27,6 @@ WORKDIR $APP_HOME
 
 # copy the Gemfile into the image and temporarily set the working directory to where they are.
 ADD Gemfile Gemfile.lock .ruby-gemset ./
-#ADD Gemfile .ruby-gemset ./
 RUN rm -rf tmp/cache/*
 
 # bundle
