@@ -5,9 +5,22 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
 
-  @@lock = Mutex.new
+
+  def lock
+    @@lock ||= Mutex.new
+  end
+  def auth_token
+    lock.synchronize {@@auth_token}
+  end
+  def auth_timeout
+    lock.synchronize {@@auth_timeout}
+  end
+  def session_token
+    lock.synchronize {@@session_token}
+  end
+
   def login
-    @@lock.synchronize do
+    lock.synchronize do
       $logger.debug 'Logging in'
       auth = self.class.post('/authservice/rest/UIDAuth',
                              body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
@@ -35,8 +48,8 @@ class EDS
   def auth_headers
     { 'Accept' => 'application/json',
       'Content-Type' => 'application/json',
-      'x-authenticationToken' => @@auth_token,
-      'x-sessionToken' => @@session_token
+      'x-authenticationToken' => auth_token,
+      'x-sessionToken' => session_token
     }
   end
 
@@ -66,7 +79,7 @@ class EDS
   end
 
   def old_session?
-    Time.now > @@auth_timeout
+    Time.now > auth_timeout
   end
 
   def check_session response
