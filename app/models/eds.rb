@@ -5,22 +5,25 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
 
+  @@lock = Mutex.new
   def login
-    $logger.debug 'Logging in'
-    auth = self.class.post('/authservice/rest/UIDAuth',
-                           body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
-                           headers: base_headers
-                          )
+    @@lock.synchronize do
+      $logger.debug 'Logging in'
+      auth = self.class.post('/authservice/rest/UIDAuth',
+                             body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
+                             headers: base_headers
+                            )
 
-    session = self.class.post('/edsapi/rest/CreateSession',
-                              body: {'Profile' => ENV['EDS_PROFILE'],
-                                     'Guest' => 'n',
-                                     'Org' => ENV['EDS_ORG']}.to_json,
-    headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
-                             )
-    @@auth_token = auth['AuthToken']
-    @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
-    @@session_token = session['SessionToken']
+      session = self.class.post('/edsapi/rest/CreateSession',
+                                body: {'Profile' => ENV['EDS_PROFILE'],
+                                       'Guest' => 'n',
+                                       'Org' => ENV['EDS_ORG']}.to_json,
+      headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
+                               )
+      @@auth_token = auth['AuthToken']
+      @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
+      @@session_token = session['SessionToken']
+    end
   end
 
   def base_headers
