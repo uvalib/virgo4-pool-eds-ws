@@ -27,7 +27,7 @@ class EDS::Search < EDS
 
       available_facets = search_response['SearchResult']['AvailableFacets']
 
-      records = search_response['SearchResult']['Data']['Records']
+      records = search_response['SearchResult']['Data']['Records'] || []
 
       self.response = {
         record_list: records,
