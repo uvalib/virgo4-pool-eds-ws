@@ -6,7 +6,6 @@ Cuba.define do
       # TODO add auth check
       # header Authorization: 'Bearer test'
       @eds = EDS::Search.new req.params
-      res.headers['Content-Type'] = 'application/json; charset=utf-8'
       res.write partial('pool_result')
     end
   end

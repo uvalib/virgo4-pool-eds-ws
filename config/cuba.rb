@@ -5,4 +5,5 @@ Cuba.plugin(Cuba::Render)
 
 Cuba.settings[:render][:template_engine] = "jbuilder"
 Cuba.settings[:render][:views] = "app/views/"
+Cuba.settings[:default_headers] = {'Content-Type' => 'application/json; charset=utf-8'}
 
