@@ -6,37 +6,32 @@ class EDS
   format :json
 
 
-  def lock
-    @@lock ||= Mutex.new
-  end
   def auth_token
-    lock.synchronize {@@auth_token}
+    @@auth_token ||= nil
   end
   def auth_timeout
-    lock.synchronize {@@auth_timeout}
+    @@auth_timeout ||= nil
   end
   def session_token
-    lock.synchronize {@@session_token}
+    @@session_token ||= nil
   end
 
   def login
-    lock.synchronize do
-      $logger.debug 'Logging in'
-      auth = self.class.post('/authservice/rest/UIDAuth',
-                             body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
-                             headers: base_headers
-                            )
+    $logger.debug 'Logging in'
+    auth = self.class.post('/authservice/rest/UIDAuth',
+                           body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
+                           headers: base_headers
+                          )
 
-      session = self.class.post('/edsapi/rest/CreateSession',
-                                body: {'Profile' => ENV['EDS_PROFILE'],
-                                       'Guest' => 'n',
-                                       'Org' => ENV['EDS_ORG']}.to_json,
-      headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
-                               )
-      @@auth_token = auth['AuthToken']
-      @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
-      @@session_token = session['SessionToken']
-    end
+    session = self.class.post('/edsapi/rest/CreateSession',
+                              body: {'Profile' => ENV['EDS_PROFILE'],
+                                     'Guest' => 'n',
+                                     'Org' => ENV['EDS_ORG']}.to_json,
+    headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
+                             )
+    @@auth_token = auth['AuthToken']
+    @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
+    @@session_token = session['SessionToken']
   end
 
   def base_headers
@@ -55,7 +50,7 @@ class EDS
 
   def ensure_login
     begin
-      if !defined?(@@session_token) || old_session?
+      if session_token.nil? || old_session?
         login
       end
 
