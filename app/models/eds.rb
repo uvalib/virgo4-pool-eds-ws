@@ -29,6 +29,7 @@ class EDS
                                      'Org' => ENV['EDS_ORG']}.to_json,
     headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
                              )
+    $logger.debug "Timeout seconds: #{auth['AuthTimeout']}"
     @@auth_token = auth['AuthToken']
     @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
     @@session_token = session['SessionToken']
