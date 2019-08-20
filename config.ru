@@ -28,7 +28,7 @@ private
   def log(env, status, header, began_at)
     length = extract_content_length(header)
 
-    msg = FORMAT % [
+    msg = %{%s - %s [%s] "%s %s%s %s" %d %s %0.0f\n} % [
       env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"] || "-",
       env["REMOTE_USER"] || "-",
       Time.now.strftime("%d/%b/%Y:%H:%M:%S %z"),
@@ -38,7 +38,7 @@ private
       env['HTTP_VERSION'],
       status.to_s[0..3],
       length,
-      (Time.now - began_at) * 1000 ]
+      ((Time.now - began_at) * 1000 ).round]
 
     logger = @logger || env['RACK_ERRORS']
     # Standard library logger doesn't support write but it supports << which actually

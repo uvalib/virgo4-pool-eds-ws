@@ -58,7 +58,7 @@ class EDS
       time = Benchmark.realtime do
         response = yield
       end
-      $logger.debug "EDS Response: #{time * 1000}"
+      $logger.debug "EDS Response: #{(time * 1000).round} mS"
       return response
 
     rescue => e
