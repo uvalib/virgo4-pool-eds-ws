@@ -81,10 +81,13 @@ class EDS
   end
 
   def check_session response
-    if response.code == 400
-      $logger.debug response[:ErrorDescription] || '400 received from EDS'
+    case response.code
+    when /4\d\d/
+      $logger.debug response[:ErrorDescription] || '4xx code received from EDS'
       login
       raise 'retry'
+    when /5\d\d/
+      $logger.debug '5xx code received from EDS' + response.body
     end
   end
 

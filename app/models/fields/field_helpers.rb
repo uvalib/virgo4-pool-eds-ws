@@ -6,9 +6,9 @@ module FieldHelpers
     Field::FIELD_NAMES.each do |name|
       f = get name
       if f.is_a? Array
-        f.each {|multi_field| list << multi_field }
+        f.each {|multi_field| self.list << multi_field }
       else
-        list << f
+        self.list << f unless f.empty?
       end
     end
   end

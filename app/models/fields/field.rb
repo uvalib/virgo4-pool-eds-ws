@@ -60,7 +60,7 @@ class Field
       get_item_data({name: 'Subject', label: 'Subject Category', group: 'Su'}) ||
       get_item_data({name: 'Subject', label: 'KeyWords Plus', group: 'Su'}) ||
       bib_entity.deep_find('SubjectFull')
-    if subject
+    if !subject.nil? || !subject.empty?
       {name: 'subject', label: 'Subject',
        value: subject }.merge(detailed_text)
     else
