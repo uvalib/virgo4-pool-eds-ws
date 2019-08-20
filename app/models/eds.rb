@@ -74,12 +74,14 @@ class EDS
   end
 
   def old_session?
-    Time.now > auth_timeout
+    old = Time.now > auth_timeout
+    $logger.debug "Session Timed Out: now:#{Time.now} timeout:#{auth_timeout}" if old
+    old
   end
 
   def check_session response
     if response.code == 400
-      $logger.debug response[:ErrorDescription] || 'EDS session timed out'
+      $logger.debug response[:ErrorDescription] || '400 received from EDS'
       login
       raise 'retry'
     end
