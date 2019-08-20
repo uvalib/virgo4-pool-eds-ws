@@ -8,7 +8,7 @@ module FieldHelpers
       if f.is_a? Array
         f.each {|multi_field| self.list << multi_field }
       else
-        self.list << f unless f.empty?
+        self.list << f if f.present?
       end
     end
   end
@@ -38,7 +38,7 @@ module FieldHelpers
   # From https://github.com/ebsco/edsapi-ruby/blob/master/lib/ebsco/eds/record.rb#L847
   def get_item_data options
 
-    if items.empty?
+    if items.blank?
       nil
     else
 
