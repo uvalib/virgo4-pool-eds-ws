@@ -25,9 +25,8 @@ class EDS::Search < EDS
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
 
-
       facet_list = search_response['SearchResult']['AvailableFacets'] || []
-      available_facets = facet_list.map {|facet| facet[:Id]}
+      available_facets = facet_list.map {|facet| facet['Id']}
 
       records = search_response['SearchResult']['Data']['Records'] || []
 
