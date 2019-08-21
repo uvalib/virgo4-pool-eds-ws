@@ -25,11 +25,16 @@ class EDS::Search < EDS
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
 
-      available_facets = search_response['SearchResult']['AvailableFacets'].map {|facet| facet[:Id]}
 
-      facet_list = search_response['SearchResult']['AvailableFacets']
+      facet_list = search_response['SearchResult']['AvailableFacets'] || []
+      available_facets = facet_list.map {|facet| facet[:Id]}
 
       records = search_response['SearchResult']['Data']['Records'] || []
+
+      confidence = 'medium'
+      if total_hits == 1
+        confidence = 'exact'
+      end
 
       self.response = {
         record_list: records,
@@ -37,7 +42,7 @@ class EDS::Search < EDS
         elapsed_ms: search_time,
         available_facets: available_facets,
         facet_list: facet_list,
-        confidence: 'high'
+        confidence: confidence
       }.deep_symbolize_keys
 
     end
@@ -50,7 +55,7 @@ class EDS::Search < EDS
       searchmode: 'all',
       resultsperpage: params['pagination']['rows'],
       sort: 'relavance',
-      #view: 'detailed',
+      view: 'detailed',
       highlight: 'n',
       includeimagequickview: 'y'
     }

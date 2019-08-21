@@ -5,7 +5,8 @@ class Field
 
   # mapping of API fields to EDS names
   FIELD_NAMES= %i(
-    id title subtitle author subject language pub_type link
+    id identifier title author subject language pub_type link abstract published_in
+    published_date
   ).freeze
 
   attr_reader :list, :record, :bib_entity, :bib_relationships, :items
@@ -26,7 +27,14 @@ class Field
 
   def id
     value = "#{record.dig(:Header, :DbId)}_#{record.dig(:Header, :An)}"
-    { name: 'id', label: 'Identifier', value: value }.merge(basic_text)
+    { name: 'id', label: 'Identifier', value: value }.merge(detailed_text)
+  end
+
+  def identifier
+    value = bib_entity.dig(:Identifiers)
+    value.map do |type|
+      { name: 'identifier', label: 'Identifier', value: value }.merge(detailed_text)
+    end
   end
 
   def title
@@ -54,15 +62,22 @@ class Field
     end
   end
   def subject
-    # TODO make multivalued
-    subject = get_item_data({name: 'Subject', label: 'Subject Terms', group: 'Su'}) ||
-      get_item_data({name: 'Subject', label: 'Subject Indexing', group: 'Su'}) ||
+    subjects = get_item_data({name: 'Subject', label: 'Subject Indexing', group: 'Su'}) ||
       get_item_data({name: 'Subject', label: 'Subject Category', group: 'Su'}) ||
       get_item_data({name: 'Subject', label: 'KeyWords Plus', group: 'Su'}) ||
-      bib_entity.deep_find('SubjectFull')
-    if subject.present?
-      {name: 'subject', label: 'Subject',
-       value: subject }.merge(detailed_text)
+      bib_entity.deep_find(:SubjectFull) || []
+
+    if subjects.present?
+      if subjects.is_a? Array
+        subjects.map do |s|
+          {name: 'subject', label: 'Subject',
+           value: s }.merge(detailed_text)
+        end
+
+      else
+        {name: 'subject', label: 'Subject',
+         value: subjects }.merge(detailed_text)
+      end
     else
       nil
     end
@@ -88,4 +103,29 @@ class Field
     {name: 'ebsco_url', label: 'More',
      value: value }.merge(basic_url)
   end
+
+  def abstract
+    abstract = get_item_data({name: 'Abstract', label: 'Abstract'})
+    {name: 'abstract', label: 'Abstract',
+     value: abstract }.merge(basic_text)
+  end
+
+  def source
+    source = get_item_data({name: 'TitleSource'})
+    {name: 'Source', label: 'Source',
+     value: source }.merge(basic_text)
+  end
+  def published_date
+    dates = bib_relationships.deep_find :Dates
+    published = dates.find {|da| da[:Type] == 'published'}
+    if published.present?
+      value = "#{published[:Y]}-#{published[:M]}-#{published[:D]}" 
+      {name: 'published_date', label: 'Published Date',
+       value: value }.merge(basic_text)
+    else
+      {}
+    end
+
+  end
+
 end

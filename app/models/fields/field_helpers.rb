@@ -45,7 +45,7 @@ module FieldHelpers
       if options[:name] and options[:label] and options[:group]
 
         items.each do |item|
-          if item['Name'] == options[:name] && item['Label'] == options[:label] && item['Group'] == options[:group]
+          if item[:Name] == options[:name] && item[:Label] == options[:label] && item[:Group] == options[:group]
             return sanitize_data(item)
           end
         end
@@ -54,7 +54,7 @@ module FieldHelpers
       elsif options[:name] and options[:label]
 
         items.each do |item|
-          if item['Name'] == options[:name] && item['Label'] == options[:label]
+          if item[:Name] == options[:name] && item[:Label] == options[:label]
             return sanitize_data(item)
           end
         end
@@ -63,7 +63,7 @@ module FieldHelpers
       elsif options[:name] and options[:group]
 
         items.each do |item|
-          if item['Name'] == options[:name] && item['Group'] == options[:group]
+          if item['Name'] == options[:name] && item[:Group] == options[:group]
             return sanitize_data(item)
           end
         end
@@ -72,7 +72,7 @@ module FieldHelpers
       elsif options[:label] and options[:group]
 
         items.each do |item|
-          if item['Label'] == options[:label] && item['Group'] == options[:group]
+          if item[:Label] == options[:label] && item[:Group] == options[:group]
             return sanitize_data(item)
           end
         end
@@ -81,7 +81,7 @@ module FieldHelpers
       elsif options[:label]
 
         items.each do |item|
-          if item['Label'] == options[:label]
+          if item[:Label] == options[:label]
             return sanitize_data(item)
           end
         end
@@ -90,7 +90,7 @@ module FieldHelpers
       elsif options[:name]
 
         items.each do |item|
-          if item['Name'] == options[:name]
+          if item[:Name] == options[:name]
             return sanitize_data(item)
           end
         end
