@@ -1,7 +1,7 @@
 class Identify
   class << self
     def name
-      ENV['VIRGO4_EDS_POOL_WS_POOL_NAME'] || 'EDS'
+      ENV['VIRGO4_EDS_POOL_WS_POOL_NAME'] || 'Articles'
     end
     def description
       ENV['VIRGO4_EDS_POOL_WS_POOL_DESCRIPTION'] || 'EBSCO Discovery Service'

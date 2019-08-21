@@ -25,7 +25,9 @@ class EDS::Search < EDS
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
 
-      available_facets = search_response['SearchResult']['AvailableFacets']
+      available_facets = search_response['SearchResult']['AvailableFacets'].map {|facet| facet[:Id]}
+
+      facet_list = search_response['SearchResult']['AvailableFacets']
 
       records = search_response['SearchResult']['Data']['Records'] || []
 
@@ -34,7 +36,8 @@ class EDS::Search < EDS
         pagination: params['pagination'].merge(total: total_hits),
         elapsed_ms: search_time,
         available_facets: available_facets,
-        confidence: 'low'
+        facet_list: facet_list,
+        confidence: 'high'
       }.deep_symbolize_keys
 
     end
