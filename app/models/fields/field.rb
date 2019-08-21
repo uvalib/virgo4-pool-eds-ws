@@ -5,7 +5,7 @@ class Field
 
   # mapping of API fields to EDS names
   FIELD_NAMES= %i(
-    id identifier title author subject language pub_type link abstract published_in
+    id doi title author subject language pub_type link abstract published_in
     published_date
   ).freeze
 
@@ -30,10 +30,14 @@ class Field
     { name: 'id', label: 'Identifier', value: value }.merge(detailed_text)
   end
 
-  def identifier
-    value = bib_entity.dig(:Identifiers)
-    value.map do |type|
-      { name: 'identifier', label: 'Identifier', value: value }.merge(detailed_text)
+  def doi
+    ids = bib_entity.dig(:Identifiers) || []
+    doi = ids.find{|i| i[:Type] == 'doi'}
+    if doi.present?
+      { name: 'doi', label: 'DOI', value: doi[:Value] }.merge(detailed_text)
+    else
+      $logger.debug "Other ids found: #{ids}"
+      {}
     end
   end
 
