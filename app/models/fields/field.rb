@@ -36,7 +36,7 @@ class Field
     if doi.present?
       { name: 'doi', label: 'DOI', value: doi[:Value] }.merge(detailed_text)
     else
-      $logger.debug "Other ids found: #{ids}"
+      $logger.debug "Other ids found: #{ids}" if ids.present?
       {}
     end
   end

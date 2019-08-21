@@ -1,21 +1,17 @@
 require 'rubygems'
 require 'bundler'
-require 'logger'
-Bundler.setup
+Bundler.require :default, ENV['RACK_ENV']
 
 $logger = Logger.new($stdout)
+use Rack::CommonLogger, $logger
 
-if ENV['RACK_ENV'] != 'production'
-  require 'dotenv/load'
-  require 'pry-debugger-jruby'
-
-  $logger.level = Logger::DEBUG
-else
-  # This is already included in dev
-  use Rack::CommonLogger, $logger
+use Rack::Cors do
+  allow do
+    origins '*'
+    resource '/api/search/*', headers: :any, methods: :post
+  end
 end
 
-require 'rack/post-body-to-params'
 use Rack::PostBodyToParams
 
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
