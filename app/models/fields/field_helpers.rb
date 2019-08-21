@@ -6,9 +6,15 @@ module FieldHelpers
     Field::FIELD_NAMES.each do |name|
       f = get name
       if f.is_a? Array
-        f.each {|multi_field| self.list << multi_field }
+        f.each do |multi_field|
+          if multi_field.present? && multi_field[:value].present?
+            self.list << multi_field
+          end
+        end
       else
-        self.list << f if f.present?
+        if f.present? && f[:value].present?
+          self.list << f
+        end
       end
     end
   end
@@ -105,7 +111,7 @@ module FieldHelpers
 
   def sanitize_data data
     # Some EDS Items are html. They aren't used currently.
-    return data
+    return data[:Data]
   end
 end
 

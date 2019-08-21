@@ -79,10 +79,10 @@ class Field
          value: subjects }.merge(detailed_text)
       end
     else
-      nil
+      {}
     end
-
   end
+
   def language
     langs = bib_entity.dig :Languages
     langs.map! {|l| l[:Text]}
@@ -106,6 +106,7 @@ class Field
 
   def abstract
     abstract = get_item_data({name: 'Abstract', label: 'Abstract'})
+
     {name: 'abstract', label: 'Abstract',
      value: abstract }.merge(basic_text)
   end
