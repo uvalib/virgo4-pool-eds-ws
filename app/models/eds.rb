@@ -5,33 +5,42 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
 
+  def lock
+    @@lock ||= Mutex.new
+  end
   def auth_token
-    @@auth_token ||= nil
+    lock.synchronize {@@auth_token ||= nil}
   end
   def auth_timeout
-    @@auth_timeout ||= nil
+    lock.synchronize {@@auth_timeout ||= nil}
   end
   def session_token
-    @@session_token ||= nil
+    lock.synchronize {@@session_token ||= nil}
   end
 
   def login
-    $logger.debug 'Logging in'
-    auth = self.class.post('/authservice/rest/UIDAuth',
-                           body: {'UserId' => ENV['EDS_USER'], 'Password' => ENV['EDS_PASS']}.to_json,
-                           headers: base_headers
-                          )
+    lock.synchronize do
+      $logger.debug 'Logging in'
+      auth = self.class.post('/authservice/rest/UIDAuth',
+                             body: {'UserId' => ENV['EDS_USER'],
+                                    'Password' => ENV['EDS_PASS']
+                                   }.to_json,
+                             headers: base_headers
+                            )
 
-    session = self.class.post('/edsapi/rest/CreateSession',
-                              body: {'Profile' => ENV['EDS_PROFILE'],
-                                     'Guest' => 'n',
-                                     'Org' => ENV['EDS_ORG']}.to_json,
-    headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
-                             )
-    $logger.debug "#{auth}|#{session}"
-    @@auth_token = auth['AuthToken']
-    @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
-    @@session_token = session['SessionToken']
+      session = self.class.post('/edsapi/rest/CreateSession',
+                  body: {'Profile' => ENV['EDS_PROFILE'],
+                         'Guest' => 'n',
+                         'Org' => ENV['EDS_ORG']
+                        }.to_json,
+                  headers: base_headers.merge(
+                    {'x-authenticationToken' => auth['AuthToken']})
+                               )
+      $logger.debug "#{auth}|#{session}"
+      @@auth_token = auth['AuthToken']
+      @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
+      @@session_token = session['SessionToken']
+    end
   end
 
   def base_headers
@@ -79,12 +88,19 @@ class EDS
     old
   end
 
+  INVALID_SESSION_CODES = %w(104 109 113).freeze
+
   def check_session response
-    case response.code
+    response_code = response.code.to_s
+    case response_code
     when /4\d\d/
-      $logger.debug response[:ErrorDescription] || '4xx code received from EDS'
-      login
-      raise 'retry'
+      $logger.debug '4xx code received from EDS' + response.body
+
+      if INVALID_SESSION_CODES.include? response_code
+        # session timeout
+        login
+        raise 'retry'
+      end
     when /5\d\d/
       $logger.debug '5xx code received from EDS' + response.body
     end
