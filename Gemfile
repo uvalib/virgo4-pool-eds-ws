@@ -10,6 +10,9 @@ gem 'httparty'
 gem 'rack-post-body-to-params', require: 'rack/post-body-to-params'
 gem 'rack-cors', require: 'rack/cors'
 
+# prometheus for monitoring
+gem 'prometheus-client'
+
 group :development do
   gem 'dotenv', require: 'dotenv/load'
   gem 'pry-debugger-jruby'

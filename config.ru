@@ -1,6 +1,13 @@
 require 'rubygems'
 require 'bundler'
+require 'prometheus/middleware/collector'
+require 'prometheus/middleware/exporter'
+
 Bundler.require :default, ENV['RACK_ENV']
+
+use Rack::Deflater, if: ->(_, _, _, body) { body.respond_to?( :map ) && body.map(&:bytesize).reduce(0, :+) > 512 }
+use Prometheus::Middleware::Collector
+use Prometheus::Middleware::Exporter
 
 $logger = Logger.new($stdout)
 use Rack::CommonLogger, $logger
