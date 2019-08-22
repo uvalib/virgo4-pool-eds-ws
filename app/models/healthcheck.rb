@@ -1,5 +1,5 @@
 class Healthcheck
   def self.checklist
-    [{ebsco: {healthy: 'unknown', message: 'Not Implemented'} }]
+    [{ebsco: {healthy: true, message: 'Not Implemented Yet!'} }]
   end
 end
