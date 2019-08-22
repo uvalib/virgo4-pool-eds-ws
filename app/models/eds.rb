@@ -5,7 +5,6 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
 
-
   def auth_token
     @@auth_token ||= nil
   end
@@ -29,7 +28,7 @@ class EDS
                                      'Org' => ENV['EDS_ORG']}.to_json,
     headers: base_headers.merge({'x-authenticationToken' => auth['AuthToken']})
                              )
-    $logger.debug "Timeout seconds: #{auth['AuthTimeout']}"
+    $logger.debug "#{auth}|#{session}"
     @@auth_token = auth['AuthToken']
     @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
     @@session_token = session['SessionToken']
