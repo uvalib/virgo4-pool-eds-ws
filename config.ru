@@ -15,7 +15,7 @@ use Rack::CommonLogger, $logger
 use Rack::Cors do
   allow do
     origins '*'
-    resource '/api/search/*', headers: :any, methods: :post
+    resource '/api/search', headers: :any, methods: [:get, :post, :options]
   end
 end
 
