@@ -27,7 +27,7 @@ class Field
 
   def id
     value = "#{record.dig(:Header, :DbId)}_#{record.dig(:Header, :An)}"
-    { name: 'id', label: 'Identifier', value: value }.merge(detailed_text)
+    { name: 'id', label: 'Identifier', value: value, display: 'optional' }.merge(detailed_text)
   end
 
   def doi
