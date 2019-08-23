@@ -5,21 +5,28 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
 
+  attr_accessor :errors
+
   def lock
-    @@lock ||= Mutex.new
+    @@lock ||= Concurrent::ReentrantReadWriteLock.new
   end
   def auth_token
-    lock.synchronize {@@auth_token ||= nil}
+    lock.with_read_lock {@@auth_token ||= nil}
   end
-  def auth_timeout
-    lock.synchronize {@@auth_timeout ||= nil}
+  def session_timeout
+    lock.with_read_lock {@@session_timeout ||= nil}
   end
   def session_token
-    lock.synchronize {@@session_token ||= nil}
+    lock.with_read_lock {@@session_token ||= nil}
   end
 
   def login
-    lock.synchronize do
+    lock.with_write_lock do
+
+      if defined?(@@session_timeout) && !@@session_timeout.nil? && @@session_timeout > Time.now
+        $logger.debug 'Skipping Additional Login'
+        return
+      end
       $logger.debug 'Logging in'
       auth = self.class.post('/authservice/rest/UIDAuth',
                              body: {'UserId' => ENV['EDS_USER'],
@@ -38,7 +45,7 @@ class EDS
                                )
       $logger.debug "#{auth}|#{session}"
       @@auth_token = auth['AuthToken']
-      @@auth_timeout = Time.now + auth['AuthTimeout'].to_i
+      @@session_timeout = Time.now + auth['AuthTimeout'].to_i
       @@session_token = session['SessionToken']
     end
   end
@@ -75,16 +82,16 @@ class EDS
       if e.message == 'retry'
         $logger.debug 'Retrying API call'
         return yield
+      else
+        self.errors << e.message
+        $logger.error e
       end
-      $logger.error e
-      return []
-
     end
   end
 
   def old_session?
-    old = Time.now > auth_timeout
-    $logger.debug "Session Timed Out: now:#{Time.now} timeout:#{auth_timeout}" if old
+    old = Time.now > session_timeout
+    $logger.debug "Session Timed Out" if old
     old
   end
 
@@ -98,11 +105,16 @@ class EDS
 
       if INVALID_SESSION_CODES.include? response_code
         # session timeout
+        # Set timeout to nil to make it through the login lock once
+        lock.with_write_lock { @@session_timeout = nil }
         login
         raise 'retry'
+      else
+        raise response.body
       end
     when /5\d\d/
       $logger.debug '5xx code received from EDS' + response.body
+      raise response.body
     end
   end
 

@@ -10,7 +10,7 @@ use Prometheus::Middleware::Collector
 use Prometheus::Middleware::Exporter
 
 $logger = Logger.new($stdout)
-use Rack::CommonLogger, $logger
+use Rack::CommonLogger, $logger unless ENV['RACK_ENV'] == 'development'
 
 use Rack::Cors do
   allow do

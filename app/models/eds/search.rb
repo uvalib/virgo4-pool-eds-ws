@@ -11,6 +11,7 @@ class EDS::Search < EDS
       self.params['pagination'] = {'start' => 0, 'rows' => 20}
     end
     self.response = {}
+    self.errors = []
     search
   end
 

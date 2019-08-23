@@ -1,10 +1,9 @@
 require 'rubygems'
 require 'cuba/test'
 require 'bundler'
-require 'logger'
 require 'pry-debugger-jruby'
 require 'dotenv/load'
-Bundler.setup
+Bundler.require :default, :development
 
 $logger = Logger.new($stdout)
 $logger.level = Logger::DEBUG
