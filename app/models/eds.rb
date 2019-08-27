@@ -70,12 +70,14 @@ class EDS
         login
       end
 
-      response = nil
+      search_result = nil
       time = Benchmark.realtime do
-        response = yield
+        search_result = yield
       end
-      $logger.debug "EDS Response: #{(time * 1000).round} mS"
-      return response
+      ms = (time * 1000).round
+      $logger.debug "EDS Response: #{ms} ms"
+      search_result[:elapsed_ms] = ms
+      return search_result
 
     rescue => e
       # catch a stale login?

@@ -42,10 +42,10 @@ class EDS::Search < EDS
       self.response = {
         record_list: records,
         pagination: params['pagination'].merge(total: total_hits),
-        elapsed_ms: search_time,
         available_facets: available_facets,
         facet_list: facet_list,
-        confidence: confidence
+        confidence: confidence,
+        debug: {eds_time: search_time}
       }.deep_symbolize_keys
 
     end
