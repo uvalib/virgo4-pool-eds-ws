@@ -59,7 +59,10 @@ class Field
     {}
   end
   def author
-    authors = bib_relationships.deep_find :NameFull
+    authors = bib_relationships[:HasContributorRelationships].map do |contrib|
+      contrib.dig :PersonEntity, :Name, :NameFull
+    end
+
     authors.map do |value|
       {name: 'author', label: 'Author',
        value: value }.merge(basic_text)
@@ -69,7 +72,7 @@ class Field
     subjects = get_item_data({name: 'Subject', label: 'Subject Indexing', group: 'Su'}) ||
       get_item_data({name: 'Subject', label: 'Subject Category', group: 'Su'}) ||
       get_item_data({name: 'Subject', label: 'KeyWords Plus', group: 'Su'}) ||
-      bib_entity.deep_find(:SubjectFull) || []
+      []
 
     if subjects.present?
       if subjects.is_a? Array
@@ -121,10 +124,14 @@ class Field
      value: source }.merge(basic_text)
   end
   def published_date
-    dates = bib_relationships.deep_find :Dates
-    published = dates.find {|da| da[:Type] == 'published'}
+    published = ''
+    bib_relationships[:IsPartOfRelationships].select do |bib|
+      dates = bib.dig :BibEntity, :Dates
+      published = dates.find {|da| da[:Type] == 'published'}
+      break if published.present?
+    end
     if published.present?
-      value = "#{published[:Y]}-#{published[:M]}-#{published[:D]}" 
+      value = "#{published[:Y]}-#{published[:M]}-#{published[:D]}"
       {name: 'published_date', label: 'Published Date',
        value: value }.merge(basic_text)
     else

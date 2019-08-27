@@ -28,4 +28,14 @@ scope do
     #puts last_response.body
     assert last_response.ok?
   end
+
+  test 'GET method' do
+    get '/api/search', {query: 'date:{1932  TO 1945} AND author:{Shelly}'}
+    assert last_response.ok?
+  end
+
+  test 'Invalid format' do
+    get '/api/search', {query: 'baddate:{1932  TO 1945} AND author:{Shelly}'}
+
+  end
 end

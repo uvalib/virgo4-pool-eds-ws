@@ -5,7 +5,7 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
 
-  attr_accessor :errors
+  attr_accessor :error_message, :status_code
 
   def lock
     @@lock ||= Concurrent::ReentrantReadWriteLock.new
@@ -85,7 +85,7 @@ class EDS
         $logger.debug 'Retrying API call'
         return yield
       else
-        self.errors << e.message
+        self.error_message = e.message
         $logger.error e
       end
     end
@@ -101,6 +101,7 @@ class EDS
 
   def check_session response
     response_code = response.code.to_s
+    self.status_code = response_code
     case response_code
     when /4\d\d/
       $logger.debug '4xx code received from EDS' + response.body

@@ -11,7 +11,8 @@ class EDS::Search < EDS
       self.params['pagination'] = {'start' => 0, 'rows' => 20}
     end
     self.response = {}
-    self.errors = []
+
+    return unless valid_request?
     search
   end
 
@@ -77,6 +78,16 @@ class EDS::Search < EDS
       facet_str += ",#{filter['name']}:#{filter['value']}"
     end
     facet_str
+  end
+
+  # add other validations here and follow the pattern
+  def valid_request?
+    unless params['query'].present?
+      self.status_code = 400
+      self.error_message = 'Query not present'
+      return false
+    end
+    return true
   end
 
 end
