@@ -1,3 +1,3 @@
-json.name Identify.name
-json.description Identify.description
-json.public_url Identify.public_url
+json.name t(:pool_name)
+json.description t(:description)
+json.public_url ENV['VIRGO4_EDS_POOL_WS_POOL_SERVICE_URL']

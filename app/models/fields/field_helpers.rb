@@ -1,4 +1,5 @@
 module FieldHelpers
+  include I18nHelper
 
   # calls the method for each entry in FIELD_NAMES and add it to list
   # also handles multivalued fields

@@ -5,8 +5,7 @@ require 'pry-debugger-jruby'
 require 'dotenv/load'
 Bundler.require :default, :development
 
-$logger = Logger.new($stdout)
-$logger.level = Logger::DEBUG
+require_relative 'config/initializer'
 
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
 

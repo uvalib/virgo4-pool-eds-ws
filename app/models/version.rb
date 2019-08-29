@@ -9,10 +9,10 @@ class Version
       end
     end
     def ruby_version
-      RUBY_VERSION
+      ENV['RUBY_VERSION']
     end
     def git_commit
-      'todo'
+      %x{git log --pretty=format:'%h' -n 1}
     end
   end
 end

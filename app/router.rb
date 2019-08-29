@@ -1,5 +1,4 @@
 require_relative '../config/cuba'
-require 'jruby/profiler'
 
 
 Cuba.define do

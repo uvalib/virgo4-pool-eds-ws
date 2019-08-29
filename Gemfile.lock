@@ -74,6 +74,7 @@ DEPENDENCIES
   cutest
   dotenv
   httparty
+  i18n
   jbuilder
   prometheus-client
   pry-debugger-jruby

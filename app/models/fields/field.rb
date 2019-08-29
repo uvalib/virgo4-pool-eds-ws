@@ -1,11 +1,11 @@
-# Portions of this are influenced by the edsapi-ruby gem
-# https://github.com/ebsco/edsapi-ruby/blob/master/lib/ebsco/eds/record.rb
 class Field
   include FieldHelpers
 
-  # mapping of API fields to EDS names
+  # This is the list of fields returned for each record.
+  # To add a new field, append it to this list and create a method with the same name below.
+  # I18n translations use this same name.
   FIELD_NAMES= %i(
-    id doi title author subject language pub_type link abstract published_in
+    id doi title author subject language pub_type ebsco_url abstract published_in
     published_date
   ).freeze
 
@@ -27,14 +27,14 @@ class Field
 
   def id
     value = "#{record.dig(:Header, :DbId)}_#{record.dig(:Header, :An)}"
-    { name: 'id', label: 'Identifier', value: value, display: 'optional' }.merge(detailed_text)
+    { name: 'id', label: t('fields.id'), value: value, display: 'optional' }.merge(detailed_text)
   end
 
   def doi
     ids = bib_entity.dig(:Identifiers) || []
     doi = ids.find{|i| i[:Type] == 'doi'}
     if doi.present?
-      { name: 'doi', label: 'DOI', value: doi[:Value] }.merge(detailed_text)
+      { name: 'doi', label: t('fields.doi'), value: doi[:Value] }.merge(detailed_text)
     else
       $logger.debug "Other ids found: #{ids}" if ids.present?
       {}
@@ -50,7 +50,7 @@ class Field
 
     value = bib_title || item_title
 
-    {name: 'title', label: 'Title',
+    {name: 'title', label: t('fields.title'),
      value: value}.merge(basic_text)
   end
 
@@ -64,7 +64,7 @@ class Field
     end
 
     authors.map do |value|
-      {name: 'author', label: 'Author',
+      {name: 'author', label: t('fields.author'),
        value: value }.merge(basic_text)
     end
   end
@@ -75,15 +75,9 @@ class Field
       []
 
     if subjects.present?
-      if subjects.is_a? Array
-        subjects.map do |s|
-          {name: 'subject', label: 'Subject',
-           value: s }.merge(detailed_text)
-        end
-
-      else
-        {name: 'subject', label: 'Subject',
-         value: subjects }.merge(detailed_text)
+      subjects.map do |s|
+        {name: 'subject', label: t('fields.subject'),
+         value: s }.merge(detailed_text)
       end
     else
       {}
@@ -95,34 +89,35 @@ class Field
     langs.map! {|l| l[:Text]}
     langs = get_item_data({name: 'Language'}) || langs
     langs.map do |lang|
-      {name: 'language', label: 'Language',
+      {name: 'language', label: t('fields.language'),
        value: lang }.merge(detailed_text)
     end
   end
   def pub_type
     value = record.dig :Header, :PubType
-    {name: 'pub_type', label: 'Publication Type',
+    {name: 'pub_type', label: t('fields.pub_type'),
      value: value }.merge(detailed_text)
   end
 
-  def link
+  def ebsco_url
     value = record[:PLink]
-    {name: 'ebsco_url', label: 'More',
+    {name: 'ebsco_url', label: t('fields.ebsco_url'),
      value: value }.merge(basic_url)
   end
 
   def abstract
     abstract = get_item_data({name: 'Abstract', label: 'Abstract'})
 
-    {name: 'abstract', label: 'Abstract',
+    {name: 'abstract', label: t('fields.abstract'),
      value: abstract }.merge(basic_text)
   end
 
   def source
     source = get_item_data({name: 'TitleSource'})
-    {name: 'Source', label: 'Source',
+    {name: 'Source', label: t('fields.source'),
      value: source }.merge(basic_text)
   end
+
   def published_date
     published = ''
     bib_relationships[:IsPartOfRelationships].select do |bib|
@@ -132,7 +127,7 @@ class Field
     end
     if published.present?
       value = "#{published[:Y]}-#{published[:M]}-#{published[:D]}"
-      {name: 'published_date', label: 'Published Date',
+      {name: 'published_date', label: t('fields.published_date'),
        value: value }.merge(basic_text)
     else
       {}

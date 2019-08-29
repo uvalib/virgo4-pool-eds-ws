@@ -1,0 +1,12 @@
+en:
+  pool_name: 'Articles'
+  fields:
+    id: 'Identifier'
+    title: 'Title'
+    author: 'Author'
+    language: 'Language'
+    pub_type: 'Publication Type'
+    ebsco_url: 'More'
+    abstract: 'Abstract'
+    source: 'Source'
+    published_date: 'Published Date'

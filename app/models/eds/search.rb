@@ -31,7 +31,7 @@ class EDS::Search < EDS
       search_time = stats['TotalSearchTime']
 
       facet_list = search_response['SearchResult']['AvailableFacets'] || []
-      available_facets = facet_list.map {|facet| facet['Id']}
+      available_facets = facet_list.map {|facet| {id: facet['Id'], name: facet['Label'] }}
 
       records = search_response['SearchResult']['Data']['Records'] || []
 
@@ -75,10 +75,12 @@ class EDS::Search < EDS
     end
     facet_str = "1"
     params['filters'].each do |filter|
-      facet_str += ",#{filter['name']}:#{filter['value']}"
+      facet_str += ",#{filter['facet_id']}:#{filter['value_id']}"
     end
     facet_str
   end
+
+  FILTER_KEYS = ['facet_id', 'value_id'].freeze
 
   # add other validations here and follow the pattern
   def valid_request?
@@ -86,6 +88,16 @@ class EDS::Search < EDS
       self.status_code = 400
       self.error_message = 'Query not present'
       return false
+    end
+
+    if params['filters'].present?
+      # Check if given keys match required FILTER_KEYS
+      given_keys = params['filters'].reduce([]) {|keys, item| keys | item.keys}
+      if (given_keys & FILTER_KEYS).size != FILTER_KEYS.size
+        self.status_code = 400
+        self.error_message = "Required filter keys are: #{FILTER_KEYS.to_sentence}"
+        return false
+      end
     end
     return true
   end
