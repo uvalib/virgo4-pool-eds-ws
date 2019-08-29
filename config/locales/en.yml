@@ -7,6 +7,7 @@ en:
     author: 'Author'
     language: 'Language'
     pub_type: 'Publication Type'
+    doi: 'DOI'
     ebsco_url: 'More'
     abstract: 'Abstract'
     source: 'Source'
