@@ -1,5 +1,5 @@
 class Field
-  include FieldHelpers
+  include ::FieldHelpers
 
   # This is the list of fields returned for each record.
   # To add a new field, append it to this list and create a method with the same name below.

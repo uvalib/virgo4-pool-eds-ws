@@ -1,6 +1,5 @@
 require_relative '../config/cuba'
 
-
 Cuba.define do
   on post do
     # Main Search
