@@ -27,7 +27,7 @@ class EDS
         $logger.debug 'Skipping Additional Login'
         return
       end
-      $logger.debug 'Logging in'
+      $logger.debug 'EDS Login'
       auth = self.class.post('/authservice/rest/UIDAuth',
                              body: {'UserId' => ENV['EDS_USER'],
                                     'Password' => ENV['EDS_PASS']
@@ -43,7 +43,7 @@ class EDS
                   headers: base_headers.merge(
                     {'x-authenticationToken' => auth['AuthToken']})
                                )
-      $logger.debug "#{auth}|#{session}"
+      #$logger.debug "#{auth}|#{session}"
       @@auth_token = auth['AuthToken']
       @@session_timeout = Time.now + auth['AuthTimeout'].to_i
       @@session_token = session['SessionToken']
@@ -104,7 +104,7 @@ class EDS
     self.status_code = response_code
     case response_code
     when /4\d\d/
-      $logger.debug '4xx code received from EDS' + response.body
+      $logger.error '4xx code received from EDS' + response.body
 
       if INVALID_SESSION_CODES.include? response_code
         # session timeout
@@ -116,7 +116,7 @@ class EDS
         raise response.body
       end
     when /5\d\d/
-      $logger.debug '5xx code received from EDS' + response.body
+      $logger.error '5xx code received from EDS' + response.body
       raise response.body
     end
   end

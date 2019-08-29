@@ -19,8 +19,8 @@ scope do
 
   test 'Filters' do
     post '/api/search', {query: 'date:{1932  TO 1945} AND author:{Shelly}',
-      filters: [{"name"=>"SourceType", "value"=>"Academic Journals"},
-                {"name"=>"ContentProvider", "value"=>"Academic Search Complete"}
+      filters: [{"facet_id"=>"SourceType", "value_id"=>"Academic Journals"},
+                {"facet_id"=>"ContentProvider", "value_id"=>"Academic Search Complete"}
 
     ]
     }

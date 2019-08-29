@@ -49,6 +49,8 @@ GEM
       nio4r (~> 2.0)
     quantile (0.2.1)
     rack (2.0.7)
+    rack-contrib (2.1.0)
+      rack (~> 2.0)
     rack-cors (1.0.3)
     rack-post-body-to-params (0.1.8)
       activesupport (>= 2.3)
@@ -79,6 +81,7 @@ DEPENDENCIES
   prometheus-client
   pry-debugger-jruby
   puma
+  rack-contrib
   rack-cors
   rack-post-body-to-params
   rack-test

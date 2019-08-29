@@ -1,17 +1,24 @@
-# App Initialization used in config.ru and test.rb
+#
+# App initialization used in config.ru and test.rb
+#
 
+#
 # Prometheus
+#
 require 'prometheus/middleware/collector'
 require 'prometheus/middleware/exporter'
 Cuba.use Rack::Deflater, if: ->(_, _, _, body) { body.respond_to?( :map ) && body.map(&:bytesize).reduce(0, :+) > 512 }
 Cuba.use Prometheus::Middleware::Collector
 Cuba.use Prometheus::Middleware::Exporter
 
+#
 # Logger
+#
 $logger = Logger.new($stdout)
 Cuba.use Rack::CommonLogger, $logger unless ENV['RACK_ENV'] == 'development'
-
-# automatic CORS support
+#
+# Automatic CORS support
+#
 Cuba.use Rack::Cors do
   allow do
     origins '*'
@@ -19,21 +26,32 @@ Cuba.use Rack::Cors do
   end
 end
 
+#
 # Converts POST body to params
+#
 Cuba.use Rack::PostBodyToParams
 
+#
 # I18n
+#
 I18n.load_path << Dir[File.expand_path('config/locales') + '/*.yml']
+I18n.available_locales = [:en]
 I18n.default_locale = :en
 module I18nHelper
+  # shorthand translate
   def t key
     # normalize keys
-    I18n.t(key.downcase.gsub(' ', '_'), options = {})
+    key = key.to_s.downcase.gsub(' ', '_')
+    I18n.t(key, options = {})
   end
 end
 Cuba.plugin I18nHelper
+Cuba.use ::I18n::Middleware # Apparently helps with thread safety
+Cuba.use Rack::Locale # handles ACCEPT_LANGUAGE header
 
-# Override logger to use ms
+#
+# Use ms in Logger
+#
 class Rack::CommonLogger
   private
   def log(env, status, header, began_at)
@@ -61,4 +79,3 @@ class Rack::CommonLogger
     end
   end
 end
-

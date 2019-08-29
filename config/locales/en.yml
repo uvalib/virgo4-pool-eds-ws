@@ -1,5 +1,6 @@
 en:
   pool_name: 'Articles'
+  pool_description: 'The EBSCO Discovery Service'
   fields:
     id: 'Identifier'
     title: 'Title'
