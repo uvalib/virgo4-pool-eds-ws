@@ -1,6 +1,7 @@
 en:
   pool_name: 'Articles'
-  pool_description: 'The EBSCO Discovery Service'
+  pool_summary: 'The EBSCO Discovery Service'
+  pool_description: 'A convenient aggregation of tens of millions of articles made available through library subscriptions.'
   fields:
     id: 'Identifier'
     title: 'Title'

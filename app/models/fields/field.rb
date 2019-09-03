@@ -28,7 +28,8 @@ class Field
 
   def id
     value = "#{record.dig(:Header, :DbId)}_#{record.dig(:Header, :An)}"
-    { name: 'id', label: t('fields.id'), value: value }
+    { name: 'id', label: t('fields.id'), value: value,
+      type: 'identifier', display: 'optional' }
   end
 
   def doi
