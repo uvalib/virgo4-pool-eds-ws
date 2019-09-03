@@ -75,12 +75,12 @@ class EDS::Search < EDS
     end
     facet_str = "1"
     params['filters'].each do |filter|
-      facet_str += ",#{filter['facet_id']}:#{filter['value_id']}"
+      facet_str += ",#{filter['facet_id']}:#{filter['value']}"
     end
     facet_str
   end
 
-  FILTER_KEYS = ['facet_id', 'value_id'].freeze
+  FILTER_KEYS = ['facet_id', 'value'].freeze
 
   # add other validations here and follow the pattern
   def valid_request?
