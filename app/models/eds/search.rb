@@ -31,7 +31,7 @@ class EDS::Search < EDS
       search_time = stats['TotalSearchTime']
 
       facet_list = search_response['SearchResult']['AvailableFacets'] || []
-      available_facets = facet_list.map {|facet| {id: facet['Id'], name: facet['Label'] }}
+      available_facets = facet_list.map {|facet| facet['Id']}
 
       records = search_response['SearchResult']['Data']['Records'] || []
 
@@ -75,12 +75,12 @@ class EDS::Search < EDS
     end
     facet_str = "1"
     params['filters'].each do |filter|
-      facet_str += ",#{filter['facet_id']}:#{filter['value']}"
+      facet_str += ",#{filter['name']}:#{filter['value']}"
     end
     facet_str
   end
 
-  FILTER_KEYS = ['facet_id', 'value'].freeze
+  FILTER_KEYS = ['name', 'value'].freeze
 
   # add other validations here and follow the pattern
   def valid_request?
