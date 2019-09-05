@@ -30,8 +30,21 @@ class EDS::Search < EDS
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
 
-      facet_list = search_response['SearchResult']['AvailableFacets'] || []
-      available_facets = facet_list.map {|facet| {id: facet['Id'], name: facet['Label'] }}
+      # if facets were requested, return them; otherwise advertise available facets
+      facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
+
+      facet_list = []
+      available_facets = []
+
+      requested_facet = params['facet'].to_s
+      case requested_facet
+      when ""
+        available_facets = facet_manifest.map {|facet| {id: facet['Id'], name: facet['Label'] }}
+      when "all"
+        facet_list = facet_manifest
+      else
+        facet_list = facet_manifest.select {|facet| facet['Id'] == requested_facet}
+      end
 
       records = []
       if params['pagination']['rows'].to_i > 0
