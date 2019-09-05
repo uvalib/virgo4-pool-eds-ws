@@ -33,7 +33,10 @@ class EDS::Search < EDS
       facet_list = search_response['SearchResult']['AvailableFacets'] || []
       available_facets = facet_list.map {|facet| {id: facet['Id'], name: facet['Label'] }}
 
-      records = search_response['SearchResult']['Data']['Records'] || []
+      records = []
+      if params['pagination']['rows'].to_i > 0
+        records = search_response['SearchResult']['Data']['Records']
+      end
 
       confidence = 'medium'
       if total_hits == 1
