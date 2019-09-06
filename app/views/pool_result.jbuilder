@@ -1,4 +1,3 @@
-json.service_url ENV['VIRGO4_EDS_POOL_WS_POOL_SERVICE_URL']
 json.identity do
   json.name t(:pool_name)
   json.summary t(:pool_summary)
