@@ -1,4 +1,9 @@
 json.service_url ENV['VIRGO4_EDS_POOL_WS_POOL_SERVICE_URL']
+json.identity do
+  json.name t(:pool_name)
+  json.summary t(:pool_summary)
+  json.description t(:pool_description)
+end
 json.elapsed_ms @eds.response[:elapsed_ms]
 json.pagination @eds.response[:pagination]
 json.record_list @eds.response[:record_list], partial: 'app/views/_record', as: :record
