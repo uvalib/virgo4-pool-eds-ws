@@ -18,8 +18,8 @@ class EDS::Search < EDS
 
   def search
     ensure_login do
-      #$logger.debug "Request Params: #{params}"
-      #$logger.debug "EDS Params: #{search_params}"
+      $logger.debug "Request Params: #{params}"
+      $logger.debug "EDS Params: #{search_params}"
 
       search_response = self.class.get('/edsapi/rest/Search',
                                        query: search_params,
