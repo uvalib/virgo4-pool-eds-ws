@@ -21,10 +21,8 @@ class EDS::Search < EDS
       $logger.debug "Request Params: #{params}"
       $logger.debug "EDS Params: #{search_params}"
 
-      search_response = self.class.get('/edsapi/rest/Search',
-                                       query: search_params,
-                                       headers: auth_headers)
-      check_session search_response
+      s = search_params
+      search_response = run_search s
 
       stats = search_response['SearchResult']['Statistics']
       total_hits = stats['TotalHits']
@@ -66,6 +64,13 @@ class EDS::Search < EDS
       }.deep_symbolize_keys
 
     end
+  end
+  def run_search s
+    search_response = self.class.get('/edsapi/rest/Search',
+                                     query: s,
+                                     headers: auth_headers)
+    check_session search_response
+    search_response
   end
 
   private
