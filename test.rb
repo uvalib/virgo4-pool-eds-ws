@@ -27,12 +27,18 @@ scope do
   end
 
   test 'GET method' do
-    get '/api/search', {query: 'date:{1932  TO 1945} AND author:{Shelly}'}
+    get '/api/search', {query: 'date:{1932 TO 1945} AND author:{Shelly}'}
     assert last_response.ok?
   end
 
   test 'Invalid format' do
-    get '/api/search', {query: 'baddate:{1932  TO 1945} AND author:{Shelly}'}
+    get '/api/search', {query: 'badSearch:{1999-1999} AND author:{Shelly}'}
+    assert last_response.status == 400
+    get '/api/search', {query: 'date:{badDate} AND author:{Shelly}'}
+    assert last_response.status == 400
+    get '/api/search', {query: 'date:{1999-1999} BAD author:{Shelly}'}
+    assert last_response.status == 400
+    puts last_response.body
   end
 
   # This was used to verify boolean logic with EDS queries.

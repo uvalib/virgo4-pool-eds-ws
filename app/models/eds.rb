@@ -86,7 +86,7 @@ class EDS
         return yield
       else
         self.error_message = e.message
-        $logger.error e
+        $logger.error e.message
       end
     end
   end

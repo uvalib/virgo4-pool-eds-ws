@@ -2,7 +2,7 @@ class EDS::Search < EDS
   require 'virgo_parser'
   require 'active_support/core_ext/hash'
 
-  attr_accessor :response, :params
+  attr_accessor :response, :params, :parsed_query
 
   def initialize params
     self.params = params
@@ -11,6 +11,11 @@ class EDS::Search < EDS
       self.params['pagination'] = {'start' => 0, 'rows' => 20}
     end
     self.response = {}
+    begin
+      self.parsed_query = VirgoParser::EDS.parse(params['query']).to_h
+    rescue Exception => e
+      self.error_message = e.message
+    end
 
     return unless valid_request?
     search
@@ -70,24 +75,26 @@ class EDS::Search < EDS
                                      query: s,
                                      headers: auth_headers)
     check_session search_response
+    $logger.debug search_response['SearchRequestGet']
     search_response
   end
 
   private
   def search_params
-    eds_query = VirgoParser::EDS.parse params['query']
     facet_filter = get_facets
-    { query: eds_query,
-      facetfilter: facet_filter,
-      # includefacets might need to be optional
-      includefacets: 'y',
-      searchmode: 'all',
-      resultsperpage: params['pagination']['rows'],
-      sort: 'relavance',
-      view: 'detailed',
-      highlight: 'n',
-      includeimagequickview: 'y'
-    }.delete_if {|k, v| v.blank? }
+    query = parsed_query.merge(
+      { facetfilter: facet_filter,
+        # includefacets might need to be optional
+        includefacets: 'y',
+        searchmode: 'all',
+        resultsperpage: params['pagination']['rows'],
+        sort: 'relavance',
+        view: 'detailed',
+        highlight: 'n',
+        includeimagequickview: 'y'
+    })
+    query.delete_if {|k, v| v.blank? }
+    query
   end
 
   def get_facets
@@ -108,6 +115,11 @@ class EDS::Search < EDS
     unless params['query'].present?
       self.status_code = 400
       self.error_message = 'Query not present'
+      return false
+    end
+    unless parsed_query.present?
+      self.status_code = 400
+      self.error_message ||= 'Query Syntax error'
       return false
     end
 
