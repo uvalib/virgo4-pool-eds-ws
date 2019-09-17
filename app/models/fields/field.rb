@@ -22,7 +22,6 @@ class Field
     generate_list
   end
 
-  private
 
   # Field methods
 
