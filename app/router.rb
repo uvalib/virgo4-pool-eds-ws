@@ -30,7 +30,15 @@ Cuba.define do
     end
 
     # Single Item
-    on 'api/resource/:id' do
+    on 'api/resource/:id' do |id|
+      @eds = EDS::Item.new id
+      if @eds.error_message.present?
+        res.status = @eds.status_code
+        res.write({error_message: @eds.error_message}.to_json)
+      else
+        res.write partial('single_result')
+      end
+
     end
 
     on 'version' do
