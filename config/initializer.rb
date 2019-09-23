@@ -23,6 +23,7 @@ Cuba.use Rack::Cors do
   allow do
     origins '*'
     resource '/api/search', headers: :any, methods: [:get, :post, :options]
+    resource '/api/resource/*', headers: :any, methods: [:get, :options]
   end
 end
 
