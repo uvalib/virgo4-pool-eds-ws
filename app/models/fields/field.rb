@@ -7,7 +7,7 @@ class Field
   # I18n translations use this same name.
   FIELD_NAMES= %i(
     id doi title author subject language pub_type ebsco_url abstract published_in
-    published_date
+    published_date image_url
   ).freeze
 
   attr_reader :list, :record, :bib_entity, :bib_relationships, :items
@@ -51,8 +51,8 @@ class Field
 
     value = bib_title || item_title
 
-    {name: 'title', label: t('fields.title'),
-     value: value}.merge(basic_text)
+    basic_text.merge({name: 'title', label: t('fields.title'),
+     value: value, type: 'title'})
   end
 
   # EDS doesn't have subtitles
@@ -65,8 +65,8 @@ class Field
     end
 
     authors.map do |value|
-      {name: 'author', label: t('fields.author'),
-       value: value }.merge(basic_text)
+      basic_text.merge({name: 'author', label: t('fields.author'),
+       value: value, type: 'author'})
     end
   end
   def subject
@@ -133,7 +133,10 @@ class Field
     else
       {}
     end
+  end
 
+  def image_url
+    {}
   end
 
 end
