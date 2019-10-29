@@ -26,6 +26,10 @@ class EDS::Search < EDS
       $logger.debug "Request Params: #{params}"
       $logger.debug "EDS Params: #{search_params}"
 
+      if on_shelf_facet?
+        return empty_response
+      end
+
       s = search_params
       search_response = run_search s
 
@@ -51,7 +55,7 @@ class EDS::Search < EDS
 
       records = []
       if params['pagination']['rows'].to_i > 0
-        records = search_response['SearchResult']['Data']['Records']
+        records = search_response['SearchResult']['Data']['Records'] || []
       end
 
       confidence = 'medium'
@@ -98,11 +102,17 @@ class EDS::Search < EDS
   end
 
   def get_facets
-    if params['filters'].blank?
+    filters = params['filters'].reject do |filter|
+      # remove online availability from EDS request
+      filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
+    end
+
+    if filters.blank?
       return nil
     end
+
     facet_str = "1"
-    params['filters'].each do |filter|
+    filters.each do |filter|
       facet_str += ",#{filter['facet_id']}:#{filter['value']}"
     end
     facet_str
@@ -133,6 +143,24 @@ class EDS::Search < EDS
       end
     end
     return true
+  end
+
+  def on_shelf_facet?
+    params['filters'].any? do |filter|
+      filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
+    end
+  end
+
+
+  def empty_response
+    self.response = {
+      record_list: [],
+      pagination: {},
+      available_facets: [],
+      facet_list: [],
+      confidence: 'low',
+      debug: {eds_time: 0}
+    }.deep_symbolize_keys
   end
 
 end
