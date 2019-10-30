@@ -102,6 +102,7 @@ class EDS::Search < EDS
   end
 
   def get_facets
+    params['filters'] ||= []
     filters = params['filters'].reject do |filter|
       # remove online availability from EDS request
       filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
