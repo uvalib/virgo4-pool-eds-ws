@@ -74,9 +74,9 @@ class EDS::Search < EDS
 
     end
   end
-  def run_search s
+  def run_search query
     search_response = self.class.get('/edsapi/rest/Search',
-                                     query: s,
+                                     query: query,
                                      headers: auth_headers)
     check_session search_response
     $logger.debug search_response['SearchRequestGet']

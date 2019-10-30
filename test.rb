@@ -104,4 +104,10 @@ scope do
     parsed_body = JSON.parse last_response.body
     assert_equal parsed_body.keys, ["fields"]
   end
+
+  test 'Failing Author' do
+    post '/api/search', {query: 'author:{Hernández-Iturriaga}'}
+    parsed_body = JSON.parse last_response.body
+    assert parsed_body['group_list'].count > 1
+  end
 end
