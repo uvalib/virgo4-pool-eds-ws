@@ -23,8 +23,8 @@ class EDS::Search < EDS
 
   def search
     ensure_login do
-      $logger.debug "Request Params: #{params}"
-      $logger.debug "EDS Params: #{search_params}"
+      #$logger.debug "Request Params: #{params}"
+      #$logger.debug "EDS Params: #{search_params}"
 
       if on_shelf_facet?
         return empty_response
@@ -95,7 +95,9 @@ class EDS::Search < EDS
         sort: 'relavance',
         view: 'detailed',
         highlight: 'n',
-        includeimagequickview: 'y'
+        includeimagequickview: 'y',
+        # Peer reviewed limiter
+        limiter: 'RV:Y'
     })
     query.delete_if {|k, v| v.blank? }
     query
