@@ -4,6 +4,8 @@ class EDS::Search < EDS
 
   attr_accessor :response, :params, :parsed_query
 
+  DEFAULT_FACETS= [{facet_id: 'DispositionFacet', name: 'Disposition', values: ['Peer Reviewed']}]
+
   def initialize params
     self.params = params
     if params['pagination'].nil?
@@ -37,13 +39,12 @@ class EDS::Search < EDS
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
 
-      # if facets were requested, return them; otherwise advertise available facets
-      facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
-
       facet_list = []
       available_facets = []
 
+      # if facets were requested, return them; otherwise advertise available facets
       requested_facet = params['facet'].to_s
+      facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
       case requested_facet
       when ""
         available_facets = facet_manifest.map {|facet| {id: facet['Id'], name: facet['Label'] }}
@@ -68,6 +69,7 @@ class EDS::Search < EDS
         pagination: params['pagination'].merge(total: total_hits),
         available_facets: available_facets,
         facet_list: facet_list,
+        default_facets: DEFAULT_FACETS,
         confidence: confidence,
         debug: {eds_time: search_time}
       }.deep_symbolize_keys
@@ -153,7 +155,6 @@ class EDS::Search < EDS
       filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
     end
   end
-
 
   def empty_response
     self.response = {
