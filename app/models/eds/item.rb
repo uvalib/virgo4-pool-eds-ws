@@ -12,6 +12,7 @@ class EDS::Item < EDS
     self.id = id
     self.dbid, self.an, more = id.split('_')
     if more.present? || !(an.present? && dbid.present?)
+      self.status_code = 404
       self.error_message = "Invalid ID format for #{id}"
       return
     end
