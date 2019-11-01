@@ -94,7 +94,7 @@ class EDS::Search < EDS
         includefacets: 'y',
         searchmode: 'all',
         resultsperpage: params['pagination']['rows'],
-        sort: 'relavance',
+        sort: 'relevance',
         view: 'detailed',
         highlight: 'n',
         includeimagequickview: 'y',
