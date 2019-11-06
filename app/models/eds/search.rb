@@ -4,7 +4,12 @@ class EDS::Search < EDS
 
   attr_accessor :response, :params, :parsed_query
 
-  DEFAULT_FACETS= [{facet_id: 'DispositionFacet', name: 'Disposition', values: ['Peer Reviewed']}]
+  # Default Facets are suggested to be applied by default.
+  # This is formatted to match facets returned by EDS.
+  # The API response format is in app/views/_default_facets.jbuilder
+  DEFAULT_FACETS= [{'Id' => 'PeerReviewedFacet', 'Label' => 'Peer Reviewed Only',
+                    'AvailableFacetValues' =>[ {'Value' => 'Yes'}],
+                    'DefaultValues' => ['Yes']}]
 
   def initialize params
     self.params = params
@@ -45,6 +50,9 @@ class EDS::Search < EDS
       # if facets were requested, return them; otherwise advertise available facets
       requested_facet = params['facet'].to_s
       facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
+
+      facet_manifest += DEFAULT_FACETS
+
       case requested_facet
       when ""
         available_facets = facet_manifest.map {|facet| {id: facet['Id'], name: facet['Label'] }}
@@ -99,7 +107,7 @@ class EDS::Search < EDS
         highlight: 'n',
         includeimagequickview: 'y',
         # Peer reviewed limiter
-        limiter: 'RV:Y'
+        limiter: peer_reviewed_limiter
     })
     query.delete_if {|k, v| v.blank? }
     query
@@ -108,8 +116,12 @@ class EDS::Search < EDS
   def get_facets
     params['filters'] ||= []
     filters = params['filters'].reject do |filter|
-      # remove online availability from EDS request
+      # Remove these from EDS request
+      # online availability
       filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
+
+      # peer reviwed (added as limiter)
+      filter['facet_id'] == 'PeerReviewedFacet'
     end
 
     if filters.blank?
@@ -153,6 +165,17 @@ class EDS::Search < EDS
   def on_shelf_facet?
     params['filters'].any? do |filter|
       filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
+    end
+  end
+
+  def peer_reviewed_limiter
+    peer_reviewed_facet = params['filters'].detect do |filter|
+      filter['facet_id'] == 'PeerReviewedFacet'
+    end
+    if peer_reviewed_facet && peer_reviewed_facet['value'] == 'Yes'
+      'RV:Y'
+    else
+      nil
     end
   end
 
