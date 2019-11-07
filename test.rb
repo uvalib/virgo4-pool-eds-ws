@@ -105,9 +105,23 @@ scope do
     assert_equal parsed_body.keys, ["fields"]
   end
 
-  test 'Failing Author' do
+  test 'Failing Author with -' do
     post '/api/search', {query: 'author:{Hernández-Iturriaga}'}
     parsed_body = JSON.parse last_response.body
     assert parsed_body['group_list'].count > 1
   end
+
+  test 'Escape : , ( )' do
+    post '/api/search', {query: 'title:{Actitud hacia la Ciencia: desarrollo y validación estructural del School Science Attitude Questionnaire (SSAQ).}'}
+    assert last_response.ok?
+    parsed_body = JSON.parse last_response.body
+    assert parsed_body['group_list'].present?
+
+    post '/api/search', {query: 'title:{Science and Religion in the Anglo-American Periodical Press, 1860-1900: A Failed Reconciliation}'}
+    assert last_response.ok?
+    parsed_body = JSON.parse last_response.body
+    assert parsed_body['group_list'].present?
+  end
+
+
 end
