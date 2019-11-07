@@ -106,14 +106,15 @@ class EDS
     when /4\d\d/
       $logger.error '4xx code received from EDS' + response.body
 
-      if INVALID_SESSION_CODES.include? response_code
+      eds_error_code = response['ErrorNumber']
+      if INVALID_SESSION_CODES.include? eds_error_code
         # session timeout
         # Set timeout to nil to make it through the login lock once
         lock.with_write_lock { @@session_timeout = nil }
         login
         raise 'retry'
       else
-        raise response.body
+        raise 'from EDS: ' + response.body
       end
     when /5\d\d/
       $logger.error '5xx code received from EDS' + response.body
