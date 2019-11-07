@@ -12,6 +12,7 @@ class EDS::Search < EDS
       # default pagination
       self.params['pagination'] = {'start' => 0, 'rows' => 20}
     end
+
     self.response = {}
     begin
       self.parsed_query = VirgoParser::EDS.parse(params['query']).to_h
@@ -151,8 +152,10 @@ class EDS::Search < EDS
   end
 
   def on_shelf_facet?
-    params['filters'].any? do |filter|
-      filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
+    if params['filters'].present?
+      params['filters'].any? do |filter|
+        filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
+      end
     end
   end
 
