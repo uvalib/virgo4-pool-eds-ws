@@ -7,7 +7,6 @@ class EDS::Search < EDS
   def initialize params
     self.params = params
     self.facets_only = params.delete 'facets_only'
-    self.requested_filters = params['filters'] || []
 
     if params['pagination'].nil?
       # default pagination
@@ -25,6 +24,8 @@ class EDS::Search < EDS
     end
 
     return unless valid_request?
+
+
     if facets_only
       facets
     else
@@ -172,20 +173,30 @@ class EDS::Search < EDS
     end
 
     if params['filters'].present?
-      # Check if given keys match required FILTER_KEYS
-      given_keys = params['filters'].reduce([]) {|keys, item| keys | item.keys}
-      if (given_keys & FILTER_KEYS).size != FILTER_KEYS.size
+      # only one set of filters alowed
+      if !params['filters'].one?
         self.status_code = 400
-        self.error_message = "Required filter keys are: #{FILTER_KEYS.to_sentence}"
+        self.error_message = "Only one set of filters alowed."
+        return false
+      end
+
+      filters = params['filters'].first['facets']
+      # Check if given keys match required FILTER_KEYS
+      given_keys = filters.reduce([]) {|keys, item| keys | item.keys}
+      if given_keys.include? FILTER_KEYS
+        self.status_code = 400
+        self.error_message = "Available filter keys are: #{FILTER_KEYS.to_sentence}"
         return false
       end
     end
+
+    self.requested_filters = filters
     return true
   end
 
   def on_shelf_facet?
-    if params['filters'].present?
-      params['filters'].any? do |filter|
+    if requested_filters.present?
+      requested_filters.any? do |filter|
         filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
       end
     end
