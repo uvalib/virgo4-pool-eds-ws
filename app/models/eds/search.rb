@@ -2,7 +2,11 @@ class EDS::Search < EDS
   require 'virgo_parser'
   require 'active_support/core_ext/hash'
 
-  attr_accessor :response, :params, :parsed_query, :facets_only, :requested_filters
+  attr_accessor :response, :params, :parsed_query, :facets_only, :requested_filters, :peer_reviewed
+
+  PEER_REVIEWED_FACET = {'Id' => 'PeerReviewedOnly', 'Label' => 'Peer Reviewed Only',
+                    'AvailableFacetValues' =>[ {'Value' => 'Yes'}, {'Value' => 'No'}]
+                    }
 
   def initialize params
     self.params = params
@@ -25,6 +29,7 @@ class EDS::Search < EDS
 
     return unless valid_request?
 
+    apply_defaults
 
     if facets_only
       facets
@@ -33,7 +38,6 @@ class EDS::Search < EDS
     end
   end
 
-  DEFAULT_FACETS= [{facet_id: 'PeerReviewedFacet', name: 'Peer Reviewed Only', values: ['Yes', 'No']}]
   def self.new_facets params
     params['facets_only'] = true
     new params
@@ -47,6 +51,9 @@ class EDS::Search < EDS
       search_time = search_response.dig 'SearchResult', 'Statistics', 'TotalSearchTime'
 
       facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
+
+      facet_manifest << PEER_REVIEWED_FACET
+
       # Mark selected Facets
       facet_Manifest = facet_manifest.map do |facet|
         facet_selected = requested_filters.detect do |requested_f|
@@ -123,6 +130,7 @@ class EDS::Search < EDS
   private
   def search_params
     facet_filter = get_facets
+
     query = parsed_query.merge(
       { facetfilter: facet_filter,
         # includefacets might need to be optional
@@ -134,7 +142,7 @@ class EDS::Search < EDS
         highlight: 'n',
         includeimagequickview: 'y',
         # Peer reviewed limiter
-        limiter: 'RV:Y'
+        limiter: (self.peer_reviewed ? 'RV:Y' : nil)
     })
     query.delete_if {|k, v| v.blank? }
     query
@@ -143,7 +151,11 @@ class EDS::Search < EDS
   def get_facets
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
-      filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
+      (filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
+      ) || (
+      # remove Peer Reviewed
+      filter['facet_id'] == PEER_REVIEWED_FACET['Id']
+      )
     end
 
     if filters.blank?
@@ -190,8 +202,22 @@ class EDS::Search < EDS
       end
     end
 
-    self.requested_filters = filters
+    self.requested_filters = filters || []
     return true
+  end
+
+  def apply_defaults
+
+    peer_reviewed_request = requested_filters.find do |f|
+      f['facet_id'] == PEER_REVIEWED_FACET['Id']
+    end
+
+    if peer_reviewed_request.present? && peer_reviewed_request['value'] == 'No'
+      self.peer_reviewed = false
+    else
+      self.peer_reviewed = true
+      self.requested_filters << {'facet_id' => PEER_REVIEWED_FACET['Id'], 'value' => 'Yes'}
+    end
   end
 
   def on_shelf_facet?
