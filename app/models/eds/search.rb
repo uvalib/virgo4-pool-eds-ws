@@ -2,15 +2,19 @@ class EDS::Search < EDS
   require 'virgo_parser'
   require 'active_support/core_ext/hash'
 
-  attr_accessor :response, :params, :parsed_query
-
-  DEFAULT_FACETS= [{facet_id: 'DispositionFacet', name: 'Disposition', values: ['Peer Reviewed']}]
+  attr_accessor :response, :params, :parsed_query, :facets_only, :requested_filters
 
   def initialize params
     self.params = params
+    self.facets_only = params.delete 'facets_only'
+    self.requested_filters = params['filters'] || []
+
     if params['pagination'].nil?
       # default pagination
       self.params['pagination'] = {'start' => 0, 'rows' => 20}
+
+    elsif facets_only
+      params['pagination'] = {'start' => 0, 'rows' => 0}
     end
 
     self.response = {}
@@ -21,7 +25,54 @@ class EDS::Search < EDS
     end
 
     return unless valid_request?
-    search
+    if facets_only
+      facets
+    else
+      search
+    end
+  end
+
+  DEFAULT_FACETS= [{facet_id: 'PeerReviewedFacet', name: 'Peer Reviewed Only', values: ['Yes', 'No']}]
+  def self.new_facets params
+    params['facets_only'] = true
+    new params
+  end
+
+  def facets
+    ensure_login do
+      s = search_params
+      search_response = run_search s
+
+      search_time = search_response.dig 'SearchResult', 'Statistics', 'TotalSearchTime'
+
+      facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
+      # Mark selected Facets
+      facet_Manifest = facet_manifest.map do |facet|
+        facet_selected = requested_filters.detect do |requested_f|
+          facet['Id'] == requested_f['facet_id']
+        end
+        if facet_selected
+          facet['AvailableFacetValues'].each do |f_value|
+            selected = requested_filters.detect do |requested|
+              requested['value'] == f_value['Value']
+            end
+            if selected
+              f_value['Selected'] = true
+            else
+              f_value['Selected'] = false
+            end
+          end
+        else
+          # mark the entire facet as not selected to reduce searching
+          facet['NotSelected'] = true
+        end
+      end
+
+      self.response = {
+        facet_list: facet_manifest,
+        debug: {eds_time: search_time}
+      }.deep_symbolize_keys
+    end
   end
 
   def search
@@ -40,21 +91,6 @@ class EDS::Search < EDS
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
 
-      facet_list = []
-      available_facets = []
-
-      # if facets were requested, return them; otherwise advertise available facets
-      requested_facet = params['facet'].to_s
-      facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
-      case requested_facet
-      when ""
-        available_facets = facet_manifest.map {|facet| {id: facet['Id'], name: facet['Label'] }}
-      when "all"
-        facet_list = facet_manifest
-      else
-        facet_list = facet_manifest.select {|facet| facet['Id'] == requested_facet}
-      end
-
       records = []
       if params['pagination']['rows'].to_i > 0
         records = search_response['SearchResult']['Data']['Records'] || []
@@ -68,9 +104,6 @@ class EDS::Search < EDS
       self.response = {
         record_list: records,
         pagination: params['pagination'].merge(total: total_hits),
-        available_facets: available_facets,
-        facet_list: facet_list,
-        default_facets: DEFAULT_FACETS,
         confidence: confidence,
         debug: {eds_time: search_time}
       }.deep_symbolize_keys
@@ -92,7 +125,7 @@ class EDS::Search < EDS
     query = parsed_query.merge(
       { facetfilter: facet_filter,
         # includefacets might need to be optional
-        includefacets: 'y',
+        includefacets: (self.facets_only ? 'y' : 'n'),
         searchmode: 'all',
         resultsperpage: params['pagination']['rows'],
         sort: 'relevance',
@@ -107,8 +140,7 @@ class EDS::Search < EDS
   end
 
   def get_facets
-    params['filters'] ||= []
-    filters = params['filters'].reject do |filter|
+    filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
       filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
     end

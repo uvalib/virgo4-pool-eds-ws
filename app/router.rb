@@ -2,6 +2,18 @@ require_relative '../config/cuba'
 
 Cuba.define do
   on post do
+    on 'api/search/facets' do
+
+      @facets = EDS::Search.new_facets req.params
+      if @facets.error_message.present?
+        res.status = @facets.status_code
+        res.write({error_message: @facets.error_message}.to_json)
+      else
+        res.write partial('facets_result')
+      end
+
+    end
+
     # Main Search
     on 'api/search' do
       # TODO add auth check
