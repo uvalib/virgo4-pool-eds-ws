@@ -22,7 +22,8 @@ Cuba.use Rack::CommonLogger, $logger unless ENV['RACK_ENV'] == 'development'
 Cuba.use Rack::Cors do
   allow do
     origins '*'
-    resource '/api/search', headers: :any, methods: [:get, :post, :options]
+    resource '/api/search', headers: :any, methods: [:post, :options]
+    resource '/api/search/facets', headers: :any, methods: [:post, :options]
     resource '/api/resource/*', headers: :any, methods: [:get, :options]
   end
 end

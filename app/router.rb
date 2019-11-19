@@ -11,7 +11,6 @@ Cuba.define do
       else
         res.write partial('facets_result')
       end
-
     end
 
     # Main Search
@@ -28,19 +27,6 @@ Cuba.define do
     end
   end
   on get do
-    # Support searching with GET too
-    on 'api/search' do
-      # TODO add auth check
-      # header Authorization: 'Bearer test'
-      @eds = EDS::Search.new req.params
-      if @eds.error_message.present?
-        res.status = @eds.status_code
-        res.write({error_message: @eds.error_message}.to_json)
-      else
-        res.write partial('pool_result')
-      end
-    end
-
     # Single Item
     on 'api/resource/:id' do |id|
       @eds = EDS::Item.new id
