@@ -44,7 +44,11 @@ class EDS::Search < EDS
   end
 
   def facets
+    if on_shelf_facet?
+      return empty_facet_response
+    end
     ensure_login do
+
       s = search_params
       search_response = run_search s
 
@@ -97,13 +101,13 @@ class EDS::Search < EDS
   end
 
   def search
+    if on_shelf_facet?
+      return empty_search_response
+    end
     ensure_login do
       #$logger.debug "Request Params: #{params}"
       #$logger.debug "EDS Params: #{search_params}"
 
-      if on_shelf_facet?
-        return empty_response
-      end
 
       s = search_params
       search_response = run_search s
@@ -142,10 +146,9 @@ class EDS::Search < EDS
 
   private
   def search_params
-    facet_filter = get_facets
 
     query = parsed_query.merge(
-      { facetfilter: facet_filter,
+      { facetfilter: eds_facet_string,
         # includefacets might need to be optional
         includefacets: (self.facets_only ? 'y' : 'n'),
         searchmode: 'all',
@@ -161,10 +164,10 @@ class EDS::Search < EDS
     query
   end
 
-  def get_facets
+  def eds_facet_string
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
-      (filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'Online'
+      (filter['facet_id'] == 'FacetAvailability'
       ) || (
       # remove Peer Reviewed
       filter['facet_id'] == PEER_REVIEWED_FACET['Id']
@@ -253,8 +256,9 @@ class EDS::Search < EDS
         end
       else
         # add the facet
+        label = requested_f['facet_name'] || requested_f['display']['facet']
         facet_manifest << {"Id" => requested_f['facet_id'],
-                            "Label" => requested_f['facet_name'],
+                            "Label" => label,
                             "AvailableFacetValues" => [formatted_f]
         }
       end
@@ -264,13 +268,18 @@ class EDS::Search < EDS
   end
 
 
-  def empty_response
+  def empty_search_response
     self.response = {
       record_list: [],
       pagination: {},
-      available_facets: [],
-      facet_list: [],
       confidence: 'low',
+      debug: {eds_time: 0}
+    }.deep_symbolize_keys
+  end
+
+  def empty_facet_response
+    self.response = {
+      facet_list: [],
       debug: {eds_time: 0}
     }.deep_symbolize_keys
   end
