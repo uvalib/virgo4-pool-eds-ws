@@ -54,6 +54,10 @@ class EDS::Search < EDS
 
       facet_manifest << PEER_REVIEWED_FACET
 
+      # Add requested filters in
+      facet_manifest = merge_requested_facets(facet_manifest)
+
+
       # Mark selected Facets
       facet_Manifest = facet_manifest.map do |facet|
         facet_selected = requested_filters.detect do |requested_f|
@@ -73,6 +77,15 @@ class EDS::Search < EDS
         else
           # mark the entire facet as not selected to reduce searching
           facet['NotSelected'] = true
+        end
+      end
+
+      # ABC sort facets
+      facet_manifest.sort_by! do |f|
+        if f['NotSelected']
+          [1, f['Label']]
+        else
+          [0, f['Label']]
         end
       end
 
@@ -227,6 +240,29 @@ class EDS::Search < EDS
       end
     end
   end
+
+  def merge_requested_facets facet_manifest
+    requested_filters.each do |requested_f|
+      formatted_f = {"Value" => requested_f['value'] , 'selected' => true }
+      # if this facet is in the manifest
+      if facet = facet_manifest.find {|fm| fm['Id'] == requested_f['facet_id']}
+        # if the value does not exist
+        if facet['AvailableFacetValues'].none? {|fv| fv['Value'] == formatted_f['Value']}
+          #add the bucket value
+          facet['AvailableFacetValues'] << formatted_f
+        end
+      else
+        # add the facet
+        facet_manifest << {"Id" => requested_f['facet_id'],
+                            "Label" => requested_f['facet_name'],
+                            "AvailableFacetValues" => [formatted_f]
+        }
+      end
+    end
+    facet_manifest
+
+  end
+
 
   def empty_response
     self.response = {
