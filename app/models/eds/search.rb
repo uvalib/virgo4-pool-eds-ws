@@ -5,7 +5,8 @@ class EDS::Search < EDS
   attr_accessor :response, :params, :parsed_query, :facets_only, :requested_filters, :peer_reviewed
 
   PEER_REVIEWED_FACET = {'Id' => 'PeerReviewedOnly', 'Label' => 'Peer Reviewed Only',
-                    'AvailableFacetValues' =>[ {'Value' => 'Yes'}, {'Value' => 'No'}]
+                    'AvailableFacetValues' =>[ {'Value' => 'Yes'}, {'Value' => 'No'}],
+                    'Type' => 'radio'
                     }
 
   def initialize params

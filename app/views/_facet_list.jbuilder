@@ -1,6 +1,7 @@
 json.id facet[:Id]
 #TODO translate
 json.name facet[:Label]
+json.type facet[:Type] if facet[:Type].present?
 json.buckets facet[:AvailableFacetValues] do |facet_bucket|
   json.value facet_bucket[:Value]
   json.count facet_bucket[:Count]
