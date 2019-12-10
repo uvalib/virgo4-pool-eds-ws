@@ -26,17 +26,12 @@ scope do
     assert last_response.ok?
   end
 
-  test 'GET method' do
-    get '/api/search', {query: 'date:{1932 TO 1945} AND author:{Shelly}'}
-    assert last_response.ok?
-  end
-
   test 'Invalid format' do
-    get '/api/search', {query: 'badSearch:{1999-1999} AND author:{Shelly}'}
+    post '/api/search', {query: 'badSearch:{1999-1999} AND author:{Shelly}'}
     assert last_response.status == 400
-    get '/api/search', {query: 'date:{badDate} AND author:{Shelly}'}
+    post '/api/search', {query: 'date:{badDate} AND author:{Shelly}'}
     assert last_response.status == 400
-    get '/api/search', {query: 'date:{1999-1999} BAD author:{Shelly}'}
+    post '/api/search', {query: 'date:{1999-1999} BAD author:{Shelly}'}
     assert last_response.status == 400
     #puts last_response.body
   end
@@ -99,7 +94,7 @@ scope do
 # end
 
   test 'Single Item' do
-    get '/api/resource/edseee_edseee.8781893'
+    get '/api/resource/a9h_8781893'
     assert last_response.ok?
     parsed_body = JSON.parse last_response.body
     assert_equal parsed_body.keys, ["fields"]
