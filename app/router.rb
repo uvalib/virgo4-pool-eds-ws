@@ -4,7 +4,7 @@ Cuba.define do
   on post do
     on 'api/search/facets' do
 
-      @facets = EDS::Search.new_facets req.params
+      @facets = EDS::FacetList.new req.params
       if @facets.error_message.present?
         res.status = @facets.status_code
         res.write({error_message: @facets.error_message}.to_json)
