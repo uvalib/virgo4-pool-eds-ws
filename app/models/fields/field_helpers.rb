@@ -114,4 +114,5 @@ module FieldHelpers
     # Some EDS Items are html. They aren't used currently.
     return data[:Data]
   end
+
 end

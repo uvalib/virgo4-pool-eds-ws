@@ -51,6 +51,9 @@ Cuba.plugin I18nHelper
 Cuba.use ::I18n::Middleware # Apparently helps with thread safety
 Cuba.use Rack::Locale # handles ACCEPT_LANGUAGE header
 
+# For #titleize
+require 'active_support/core_ext'
+
 #
 # Use ms in Logger
 #
@@ -80,4 +83,5 @@ class Rack::CommonLogger
       logger << msg
     end
   end
+
 end
