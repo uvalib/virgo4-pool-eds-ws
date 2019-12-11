@@ -51,14 +51,8 @@ class EDS::FacetList < EDS
         end
       end
 
-      # ABC sort facets
-      facet_manifest.sort_by! do |f|
-        if f['NotSelected']
-          [1, f['Label']]
-        else
-          [0, f['Label']]
-        end
-      end
+      sort_facets facet_manifest
+
 
       self.response = {
         facet_list: facet_manifest,
@@ -68,6 +62,17 @@ class EDS::FacetList < EDS
   end
 
   private
+
+  def sort_facets facet_manifest
+    # ABC sort facets
+    facet_manifest.sort_by! do |f|
+      if f['Id'] == 'PeerReviewedOnly'
+        '1'
+      else
+        f['Label']
+      end
+    end
+  end
 
   def empty_facet_response
     self.response = {
