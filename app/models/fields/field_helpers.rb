@@ -41,6 +41,9 @@ module FieldHelpers
   def detailed_url
     {visibility: 'detailed', type: 'url'}
   end
+  def detailed_subjects
+    {visibility: 'detailed', type: 'subject'}
+  end
 
   # From https://github.com/ebsco/edsapi-ruby/blob/master/lib/ebsco/eds/record.rb#L847
   def get_item_data options

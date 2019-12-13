@@ -12,7 +12,7 @@ Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
 scope do
   test 'Search' do
     #post '/api/search', {query: 'date:{<1945} AND date:{>1932} AND author:{Shelly}'}
-    post '/api/search', {query: 'date:{1932  TO 1945} AND author:{Shelly}'}
+    post '/api/search', {query: 'date:{2010 TO 2020} AND title:{animals}'}
     #puts last_response.body
     assert last_response.ok?
   end

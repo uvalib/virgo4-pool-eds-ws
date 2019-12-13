@@ -8,6 +8,8 @@ gem 'tilt'
 gem 'jbuilder'
 gem 'tilt-jbuilder'
 
+gem 'nokogiri'
+
 gem 'httparty'
 gem 'rack-post-body-to-params', require: 'rack/post-body-to-params'
 gem 'rack-cors', require: 'rack/cors'

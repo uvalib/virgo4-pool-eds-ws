@@ -36,6 +36,7 @@ GEM
     minitest (5.13.0)
     multi_xml (0.6.0)
     nio4r (2.5.2-java)
+    nokogiri (1.10.7-java)
     prometheus-client (1.0.0)
     pry (0.11.3-java)
       coderay (~> 1.1.0)
@@ -76,6 +77,7 @@ DEPENDENCIES
   httparty
   i18n
   jbuilder
+  nokogiri
   prometheus-client
   pry-debugger-jruby
   puma
