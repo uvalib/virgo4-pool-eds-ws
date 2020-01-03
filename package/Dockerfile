@@ -9,6 +9,7 @@ RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpi
 # install jruby
 ADD .ruby-version /tmp
 RUN apk --no-cache add jruby=~$(cat /tmp/.ruby-version | awk -F- '{print $2}')
+ENV PATH $PATH:/usr/share/jruby/bin
 
 # create the run user and group
 RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
@@ -17,17 +18,16 @@ RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
 ENV TZ=UTC
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# add necessary gems
-RUN jgem install bundler
-ENV PATH $PATH:/usr/share/jruby/bin
-
-# specify home 
+# specify home
 ENV APP_HOME /pool-eds-ws
 WORKDIR $APP_HOME
 
 # copy the Gemfile into the image and temporarily set the working directory to where they are.
 ADD Gemfile Gemfile.lock .ruby-gemset ./
 RUN rm -rf tmp/cache/*
+
+# add necessary gems
+RUN jgem install bundler
 
 # bundle
 RUN bundle install --jobs=4 --without=["development" "test"] --force
