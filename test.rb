@@ -97,7 +97,7 @@ scope do
     get '/api/resource/a9h_8781893'
     assert last_response.ok?
     parsed_body = JSON.parse last_response.body
-    assert_equal parsed_body.keys, ["fields"]
+    assert parsed_body.keys.include?("fields")
   end
 
   test 'Failing Author with -' do
