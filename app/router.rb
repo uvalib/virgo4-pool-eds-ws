@@ -2,6 +2,8 @@ require_relative '../config/cuba'
 
 Cuba.define do
   on post do
+    req.params[:is_guest] = User.is_guest?(req.env['HTTP_AUTHORIZATION'])
+
     on 'api/search/facets' do
 
       @facets = EDS::FacetList.new req.params
@@ -15,8 +17,7 @@ Cuba.define do
 
     # Main Search
     on 'api/search' do
-      # TODO add auth check
-      # header Authorization: 'Bearer test'
+
       @eds = EDS::Search.new req.params
       if @eds.error_message.present?
         res.status = @eds.status_code
@@ -29,7 +30,8 @@ Cuba.define do
   on get do
     # Single Item
     on 'api/resource/:id' do |id|
-      @eds = EDS::Item.new id
+      is_guest = User.is_guest?(req.env['HTTP_AUTHORIZATION'])
+      @eds = EDS::Item.new id, is_guest
       if @eds.error_message.present?
         res.status = @eds.status_code
         res.write({error_message: @eds.error_message}.to_json)

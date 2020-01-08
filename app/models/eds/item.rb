@@ -2,14 +2,15 @@ class EDS::Item < EDS
   require 'virgo_parser'
   require 'active_support/core_ext/hash'
 
-  attr_accessor :record, :id, :an, :dbid
+  attr_accessor :record, :id, :is_guest, :an, :dbid
 
-  def initialize id
+  def initialize id, is_guest
     unless id.present?
       self.error_message = 'ID is required.'
       return
     end
     self.id = id
+    self.is_guest = is_guest
     self.dbid, self.an, more = id.split('_')
     if more.present? || !(an.present? && dbid.present?)
       self.status_code = 404
@@ -26,10 +27,10 @@ class EDS::Item < EDS
       query = { an: an, dbid: dbid,
                 ebookpreferredformat: 'ebook-pdf'
       }
-
+      auth = self.is_guest ? guest_auth_headers : auth_headers
       search_response = self.class.get('/edsapi/rest/Retrieve',
                                        query: query,
-                                       headers: auth_headers)
+                                       headers: auth)
       check_session search_response
 
       r = search_response.dig 'Record'

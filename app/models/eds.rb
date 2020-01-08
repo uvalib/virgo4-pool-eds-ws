@@ -6,11 +6,14 @@ class EDS
   include HTTParty
   base_uri ENV['EDS_BASE_URI']
   format :json
+  default_timeout 15
 
-  attr_accessor :response, :params, :parsed_query, :facets_only, :requested_filters, :peer_reviewed
+  attr_accessor :response, :params, :parsed_query, :is_guest, :facets_only, :requested_filters, :peer_reviewed
 
   def initialize params
     self.response = {}
+    self.is_guest = params.delete :is_guest
+    $logger.info "Guest: #{self.is_guest}"
     self.params = params
 
     begin
@@ -42,9 +45,10 @@ class EDS
   end
 
   def run_search query
+    auth = self.is_guest ? guest_auth_headers : auth_headers
     search_response = self.class.get('/edsapi/rest/Search',
                                      query: query,
-                                     headers: auth_headers)
+                                     headers: auth)
     check_session search_response
     $logger.debug search_response['SearchRequestGet']
     search_response
@@ -56,7 +60,6 @@ class EDS
                     }
 
   def eds_facet_string
-    binding.pry if self.requested_filters.nil?
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
       (filter['facet_id'] == 'FacetAvailability'

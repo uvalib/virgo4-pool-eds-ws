@@ -4,6 +4,7 @@ module EDS::Connection
   include HTTParty
   base_uri ENV['EDS_BASE_URI']
   format :json
+  default_timeout 15
 
   attr_accessor :error_message, :status_code
 
@@ -18,6 +19,9 @@ module EDS::Connection
   end
   def session_token
     lock.with_read_lock {@@session_token ||= nil}
+  end
+  def guest_session_token
+    lock.with_read_lock {@@guest_session_token ||= nil}
   end
 
   def login
@@ -47,6 +51,16 @@ module EDS::Connection
       @@auth_token = auth['AuthToken']
       @@session_timeout = Time.now + auth['AuthTimeout'].to_i
       @@session_token = session['SessionToken']
+
+      guest_session = self.class.post('/edsapi/rest/CreateSession',
+                  body: {'Profile' => ENV['EDS_PROFILE'],
+                         'Guest' => 'y',
+                         'Org' => ENV['EDS_ORG']
+                        }.to_json,
+                  headers: base_headers.merge(
+                    {'x-authenticationToken' => auth['AuthToken']})
+                               )
+      @@guest_session_token = guest_session['SessionToken']
     end
   end
 
@@ -61,6 +75,13 @@ module EDS::Connection
       'Content-Type' => 'application/json',
       'x-authenticationToken' => auth_token,
       'x-sessionToken' => session_token
+    }
+  end
+  def guest_auth_headers
+    { 'Accept' => 'application/json',
+      'Content-Type' => 'application/json',
+      'x-authenticationToken' => auth_token,
+      'x-sessionToken' => guest_session_token
     }
   end
 
