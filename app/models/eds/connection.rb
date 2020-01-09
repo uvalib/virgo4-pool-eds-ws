@@ -142,5 +142,4 @@ module EDS::Connection
       raise response.body
     end
   end
-
 end

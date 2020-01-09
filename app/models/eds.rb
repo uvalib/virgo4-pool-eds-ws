@@ -12,7 +12,7 @@ class EDS
 
   def initialize params
     self.response = {}
-    self.is_guest = params.delete :is_guest
+    self.is_guest = params.delete :is_guest || false
     $logger.info "Guest: #{self.is_guest}"
     self.params = params
 
@@ -159,7 +159,32 @@ class EDS
       end
     end
     facet_manifest
+  end
 
+  def self.healthcheck
+    #check session variables
+    healthy = true
+    message = nil
+
+    eds = EDS.new 'query' => 'title:{placeholder}'
+    info = eds.info
+    if !info.success?
+      healthy = false
+      message = "EDS test response failed: #{info.code} #{info.inspect}"
+    end
+    [healthy, message]
+  end
+
+  def info
+    # dummy request/response for testing connection
+    info = nil
+    ensure_login do
+      info = self.class.get('/edsapi/rest/info', {format: 'text',
+                      headers: auth_headers}
+                     )
+      {}
+    end
+    info
   end
 
 end

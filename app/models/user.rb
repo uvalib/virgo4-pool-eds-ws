@@ -18,5 +18,12 @@ class User
     end
   end
 
-
+  def self.healthcheck
+    response = get("/healthcheck")
+    if response.success?
+      return [true, nil]
+    else
+      return [false, "Client Backend Error: #{response.request.inspect} #{response.body}"]
+    end
+  end
 end
