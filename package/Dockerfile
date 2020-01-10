@@ -27,7 +27,7 @@ ADD Gemfile Gemfile.lock .ruby-gemset ./
 RUN rm -rf tmp/cache/*
 
 # add necessary gems
-RUN jgem install bundler -v 2.1.3
+RUN jgem install bundler -v 2.1.4
 
 # bundle
 RUN bundle install --jobs=4 --without=["development" "test"] --force
