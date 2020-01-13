@@ -13,7 +13,7 @@ class EDS
   def initialize params
     self.response = {}
     self.is_guest = params.delete :is_guest || false
-    $logger.info "Guest: #{self.is_guest}"
+    #$logger.info "Guest: #{self.is_guest}"
     self.params = params
 
     begin
@@ -50,7 +50,7 @@ class EDS
                                      query: query,
                                      headers: auth)
     check_session search_response
-    $logger.debug search_response['SearchRequestGet']
+    #$logger.debug search_response['SearchRequestGet']
     search_response
   end
 

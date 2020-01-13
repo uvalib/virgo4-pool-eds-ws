@@ -18,9 +18,8 @@ class EDS::Search < EDS
       return empty_search_response
     end
     ensure_login do
-      #$logger.debug "Request Params: #{params}"
-      #$logger.debug "EDS Params: #{search_params}"
-
+      $logger.debug "Request Params: #{params}"
+      $logger.debug "EDS Params: #{search_params}"
 
       s = search_params
       search_response = run_search s
