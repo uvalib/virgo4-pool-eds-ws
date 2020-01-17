@@ -49,7 +49,7 @@ class Field
 
     item_title = get_item_data name: 'Title'
 
-    value = bib_title || item_title
+    value = bib_title || item_title || "Please sign in to see more."
 
     basic_text.merge({name: 'title', label: t('fields.title'),
      value: value, type: 'title'})
