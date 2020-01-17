@@ -34,8 +34,15 @@ class EDS::Item < EDS
       check_session search_response
 
       r = search_response.dig 'Record'
+      self.record = {}
 
-      self.record = r.deep_symbolize_keys
+      if self.is_guest && (r.dig('Header', 'AccessLevel').to_i <= 1)
+        self.status_code = 404
+        self.error_message = "You must log in to see this record."
+      else
+        self.record = r.deep_symbolize_keys
+      end
+      self.record
     end
   end
 end
