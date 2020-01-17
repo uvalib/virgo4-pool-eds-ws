@@ -68,7 +68,7 @@ module EDS::Connection
         login
       end
 
-      search_result = {}
+      search_result = nil
       time = Benchmark.realtime do
         search_result = yield
       end
@@ -83,7 +83,6 @@ module EDS::Connection
         $logger.debug 'Retrying API call'
         return yield
       else
-      puts e.backtrace
         self.error_message = e.message
         $logger.error e.message
       end

@@ -33,15 +33,6 @@ class EDS::Search < EDS
         records = search_response['SearchResult']['Data']['Records'] || []
       end
 
-      # Filter guest restricted records
-      if self.is_guest
-        records = records.reject do |r|
-          r.dig('Header', 'AccessLevel').to_i <= 1
-        end
-      end
-
-      params['pagination']['rows'] = records.count
-
       confidence = 'medium'
       if total_hits == 1
         confidence = 'exact'
