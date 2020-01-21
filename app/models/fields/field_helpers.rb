@@ -24,6 +24,7 @@ module FieldHelpers
   def get name
     send(name)
   rescue NoMethodError => e
+    $logger.debug "#{e.message} - #{e.backtrace.first}"
     nil
   end
 

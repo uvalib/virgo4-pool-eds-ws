@@ -18,8 +18,8 @@ class Field
   attr_reader :list, :record, :bib_entity, :bib_relationships, :items, :numbering
   def initialize record
     @record = record
-    @bib_entity = record.dig(:RecordInfo, :BibRecord, :BibEntity)
-    @bib_relationships = record.dig(:RecordInfo, :BibRecord, :BibRelationships)
+    @bib_entity = record.dig(:RecordInfo, :BibRecord, :BibEntity) || {}
+    @bib_relationships = record.dig(:RecordInfo, :BibRecord, :BibRelationships) || {}
 
     bib_relationships[:IsPartOfRelationships].select do |bib|
       @numbering = bib.dig :BibEntity, :Numbering
@@ -49,7 +49,7 @@ class Field
 
     item_title = get_item_data name: 'Title'
 
-    value = bib_title || item_title || "Please sign in to see more."
+    value = bib_title || item_title || "Please sign in to see more about this article."
 
     basic_text.merge({name: 'title', label: t('fields.title'),
      value: value, type: 'title'})
