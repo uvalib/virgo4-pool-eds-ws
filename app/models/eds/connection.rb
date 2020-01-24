@@ -89,7 +89,7 @@ module EDS::Connection
     end
   end
 
-  INVALID_SESSION_CODES = %w(104 109 113).freeze
+  INVALID_SESSION_CODES = %w(104 108 109 113).freeze
 
   def check_session response
     response_code = response.code.to_s
