@@ -118,5 +118,10 @@ scope do
     assert parsed_body['group_list'].present?
   end
 
+  test 'Complex logic with ()' do
+    post '/api/search', {query: 'keyword: {(calico OR "tortoise shell") AND (dogs OR (cats AND queen))}'}
+    assert last_response.ok?
+  end
+
 
 end

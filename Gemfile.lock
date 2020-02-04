@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/uvalib/virgo4-ruby-parser.git
-  revision: af4847a8da5f1ddcf0437d0c81818dcc0eb314f0
+  revision: fec5a6d9cac20fc68bd5ab98cb13a7ffdbe2855a
   specs:
     virgo_parser (0.0.3)
 
