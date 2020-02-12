@@ -1,3 +1,6 @@
 json.name t(:pool_name)
-json.summary t(:pool_summary)
 json.description t(:pool_description)
+json.attributes Identify::ATTRIBUTES do |a|
+  json.name a[:name]
+  json.supported a[:supported]
+end
