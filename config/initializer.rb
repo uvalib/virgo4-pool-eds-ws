@@ -25,6 +25,7 @@ Cuba.use Rack::Cors do
     resource '/api/search', headers: :any, methods: [:post, :options]
     resource '/api/search/facets', headers: :any, methods: [:post, :options]
     resource '/api/resource/*', headers: :any, methods: [:get, :options]
+    resource '/api/providers', headers: :any, methods: [:get, :options]
   end
 end
 
