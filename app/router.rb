@@ -41,6 +41,10 @@ Cuba.define do
 
     end
 
+    on 'api/providers' do
+      res.write partial('providers')
+    end
+
     on 'version' do
       res.write partial('version')
     end

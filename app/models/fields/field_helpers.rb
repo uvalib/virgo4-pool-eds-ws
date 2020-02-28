@@ -37,7 +37,7 @@ module FieldHelpers
   end
 
   def basic_url
-    {visibility: 'basic', type: 'url'}
+    {name: 'access_url', label: t('fields.access_online'), visibility: 'basic', type: 'url'}
   end
   def detailed_url
     {visibility: 'detailed', type: 'url'}

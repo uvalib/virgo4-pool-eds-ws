@@ -111,8 +111,7 @@ class Field
 
   def ebsco_url
     value = record[:PLink]
-    {name: 'ebsco_url', label: t('fields.ebsco_url'),
-     value: value }.merge(basic_url)
+    { provider: :ebsco, value: value }.merge(basic_url)
   end
 
   def epub_url
@@ -123,8 +122,7 @@ class Field
     links = record.dig(:FullText, :CustomLinks)
     full_text_link = links.find {|link| link[:Category] == 'fullText'}
     url = full_text_link[:Url] if full_text_link.present?
-    {name: 'full_text_url', label: t('fields.full_text'),
-     value: url }.merge(basic_url)
+    {provider: :serial_solutions, value: url }.merge(basic_url)
   end
   def image_url
     {}
