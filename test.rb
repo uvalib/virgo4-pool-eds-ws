@@ -4,12 +4,28 @@ require 'bundler'
 require 'pry-debugger-jruby'
 require 'dotenv/load'
 Bundler.require :default, :development
-
+ENV['AUTH_SHARED_SECRET'] = '12345'
 require_relative 'config/initializer'
 
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
+claims = {
+    UserID:           '',
+		IsUVA:            '',
+		CanPurchase:      '',
+		CanLEO:           '',
+		CanLEOPlus:       '',
+		CanPlaceReserve:  '',
+		CanBrowseReserve: '',
+    UseSIS:           '',
+		Role:             '',
+		AuthMethod:       ''
+  }
 
+jwt_token = Rack::JWT::Token.encode(claims, ENV['AUTH_SHARED_SECRET'], 'HS256')
+puts jwt_token
 scope do
+  header "Authorization", "Bearer #{jwt_token}"
+
   test 'Search' do
     #post '/api/search', {query: 'date:{<1945} AND date:{>1932} AND author:{Shelly}'}
     post '/api/search', {query: 'date:{2010 TO 2020} AND title:{animals}'}
@@ -123,5 +139,15 @@ scope do
     assert last_response.ok?
   end
 
+  test 'Bad Auth' do
+    header "Authorization", "Bearer BadJWT"
+    get '/api/resource/a9h_8781893'
+    assert last_response.unauthorized?
 
+    # These paths don't need auth
+    NO_AUTH_PATHS.each do |path|
+      get path
+      assert last_response.ok?
+    end
+  end
 end

@@ -29,6 +29,7 @@ GEM
       concurrent-ruby (~> 1.0)
     jbuilder (2.9.1)
       activesupport (>= 4.2.0)
+    jwt (2.1.0)
     method_source (0.9.2)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
@@ -52,6 +53,9 @@ GEM
       rack (~> 2.0)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
+    rack-jwt (0.5.0)
+      jwt (~> 2.1.0)
+      rack (~> 2.0.0)
     rack-post-body-to-params (0.1.8)
       activesupport (>= 2.3)
     rack-test (1.1.0)
@@ -84,6 +88,7 @@ DEPENDENCIES
   puma
   rack-contrib
   rack-cors
+  rack-jwt
   rack-post-body-to-params
   rack-test
   tilt

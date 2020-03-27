@@ -30,6 +30,17 @@ Cuba.use Rack::Cors do
 end
 
 #
+# JWT Auth
+#
+unless ENV['AUTH_SHARED_SECRET']
+  throw "AUTH_SHARED_SECRET required."
+end
+NO_AUTH_PATHS = %w(/version /identify /healthcheck)
+Cuba.use Rack::JWT::Auth, {secret: ENV['AUTH_SHARED_SECRET'], verify: true, options: { algorithm: 'HS256' },
+                           exclude: NO_AUTH_PATHS
+                          }
+
+#
 # Converts POST body to params
 #
 Cuba.use Rack::PostBodyToParams
