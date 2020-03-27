@@ -9,16 +9,16 @@ require_relative 'config/initializer'
 
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
 claims = {
-    UserID:           '',
-		IsUVA:            true,
-		CanPurchase:      '',
-		CanLEO:           '',
-		CanLEOPlus:       '',
-		CanPlaceReserve:  '',
-		CanBrowseReserve: '',
-    UseSIS:           '',
-		Role:             '',
-		AuthMethod:       ''
+    userID:           '',
+		isUVA:            true,
+		canPurchase:      '',
+		canLEO:           '',
+		canLEOPlus:       '',
+		canPlaceReserve:  '',
+		canBrowseReserve: '',
+    useSIS:           '',
+		role:             '',
+		authMethod:       ''
   }
 
 jwt_token = Rack::JWT::Token.encode(claims, ENV['V4_JWT_KEY'], 'HS256')

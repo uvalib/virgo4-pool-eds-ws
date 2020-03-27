@@ -10,7 +10,7 @@ class User
       claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
       v4_claims = claims.first
 
-      if v4_claims['IsUVA']
+      if v4_claims['isUVA']
         return false
       else
         return true
