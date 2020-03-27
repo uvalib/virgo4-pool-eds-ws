@@ -4,4 +4,4 @@
 .env
 env.*
 *.swp
-.vscode/tasks.json
+.vscode/*

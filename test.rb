@@ -10,7 +10,7 @@ require_relative 'config/initializer'
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
 claims = {
     UserID:           '',
-		IsUVA:            '',
+		IsUVA:            true,
 		CanPurchase:      '',
 		CanLEO:           '',
 		CanLEOPlus:       '',

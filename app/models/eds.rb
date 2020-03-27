@@ -13,7 +13,6 @@ class EDS
   def initialize params
     self.response = {}
     self.is_guest = params.delete :is_guest || false
-    #$logger.info "Guest: #{self.is_guest}"
     self.params = params
 
     begin
