@@ -4,7 +4,7 @@ require 'bundler'
 require 'pry-debugger-jruby'
 require 'dotenv/load'
 Bundler.require :default, :development
-ENV['AUTH_SHARED_SECRET'] = '12345'
+ENV['V4_JWT_KEY'] = '12345'
 require_relative 'config/initializer'
 
 Dir[File.join(__dir__, 'app', '**', '*.rb')].each { |file| require file }
@@ -21,7 +21,7 @@ claims = {
 		AuthMethod:       ''
   }
 
-jwt_token = Rack::JWT::Token.encode(claims, ENV['AUTH_SHARED_SECRET'], 'HS256')
+jwt_token = Rack::JWT::Token.encode(claims, ENV['V4_JWT_KEY'], 'HS256')
 puts jwt_token
 scope do
   header "Authorization", "Bearer #{jwt_token}"
