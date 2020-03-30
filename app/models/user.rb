@@ -9,8 +9,9 @@ class User
       token = token.match(/^Bearer\s+(.*)$/).captures.first
       claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' })
       v4_claims = claims.first
+      #$logger.debug v4_claims
 
-      if v4_claims['isUVA']
+      if v4_claims['isUva']
         return false
       else
         return true
