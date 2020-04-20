@@ -49,7 +49,7 @@ Cuba.define do
       res.write partial('version')
     end
     on 'identify' do
-      res.write partial("identify")
+      res.write partial("_identify")
     end
     on 'healthcheck' do
       res.write partial("healthcheck")

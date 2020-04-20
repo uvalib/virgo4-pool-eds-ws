@@ -1,8 +1,7 @@
 json.identity do
-  json.name t(:pool_name)
-  json.summary t(:pool_summary)
-  json.description t(:pool_description)
+  json.partial! 'app/views/_identify'
 end
+
 json.elapsed_ms @eds.response[:elapsed_ms]
 json.pagination @eds.response[:pagination]
 
