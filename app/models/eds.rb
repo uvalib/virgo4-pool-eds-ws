@@ -8,7 +8,8 @@ class EDS
   format :json
   default_timeout 15
 
-  attr_accessor :response, :params, :parsed_query, :is_guest, :facets_only, :requested_filters, :peer_reviewed
+  attr_accessor :response, :params, :parsed_query, :is_guest, :facets_only, :requested_filters,
+                :peer_reviewed, :applied_sort
 
   def initialize params
     self.response = {}
@@ -32,7 +33,7 @@ class EDS
         includefacets: (self.facets_only ? 'y' : 'n'),
         searchmode: 'all',
         resultsperpage: params['pagination']['rows'],
-        sort: 'relevance',
+        sort: converted_sort,
         view: 'detailed',
         highlight: 'n',
         includeimagequickview: 'y',
@@ -77,6 +78,39 @@ class EDS
       facet_str += ",#{filter['facet_id']}:#{filter['value']}"
     end
     facet_str
+  end
+
+  SORT_OPTIONS = [
+    {
+      "id": "relevance",
+      "label": "Relevance"
+    },
+    {
+      "id": "date",
+      "label": "Date"
+    }
+  ]
+
+  # Converts sort param into EDS sort key
+  def converted_sort
+    s = params['sort']
+    self.applied_sort = {sort_id: 'relevance', order: 'desc'}
+    return if s.nil?
+
+    if s['sort_id'] == 'date' &&
+      s['order'] == 'desc'
+      self.applied_sort = s
+      return 'date'
+
+    elsif s['sort_id'] == 'date' &&
+      s['order'] == 'asc'
+      self.applied_sort = s
+      return 'date2'
+
+    else
+      # Relevance only has desc, also used as a catch-all
+      'relevance'
+    end
   end
 
   FILTER_KEYS = ['facet_id', 'value'].freeze
@@ -181,7 +215,6 @@ class EDS
       info = self.class.get('/edsapi/rest/info', {format: 'text',
                       headers: auth_headers}
                      )
-      {}
     end
     info
   end
