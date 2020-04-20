@@ -5,3 +5,4 @@ json.attributes Identify::ATTRIBUTES do |a|
   json.name a[:name]
   json.supported a[:supported]
 end
+json.sort_options EDS::SORT_OPTIONS
