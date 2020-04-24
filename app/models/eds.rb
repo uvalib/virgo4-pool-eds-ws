@@ -172,6 +172,14 @@ class EDS
     end
   end
 
+  def circulating_facet?
+    if requested_filters.present?
+      requested_filters.any? do |filter|
+        filter['facet_id'] == 'FacetCirculating'
+      end
+    end
+  end
+
   def merge_requested_facets facet_manifest
     requested_filters.each do |requested_f|
       formatted_f = {"Value" => requested_f['value'] , 'selected' => true }
