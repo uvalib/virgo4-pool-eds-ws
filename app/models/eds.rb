@@ -223,8 +223,8 @@ class EDS
       info = self.class.get('/edsapi/rest/info', {format: 'text',
                       headers: auth_headers}
                      )
+      return info
     end
-    info
   end
 
 end

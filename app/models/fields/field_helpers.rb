@@ -8,15 +8,17 @@ module FieldHelpers
       f = get name
       if f.is_a? Array
         f.each do |multi_field|
-          if multi_field.present? && multi_field[:value].present?
-            self.list << multi_field
-          end
+          add_to_list(multi_field)
         end
       else
-        if f.present? && f[:value].present?
-          self.list << f
-        end
+        add_to_list(f)
       end
+    end
+  end
+
+  def add_to_list f
+    if f.present? && f[:value].present?
+      self.list << f
     end
   end
 
@@ -27,6 +29,8 @@ module FieldHelpers
 #    $logger.debug "#{e.message} - #{e.backtrace.first}"
     nil
   end
+
+
 
   def basic_text
     {visibility: 'basic', type: 'text'}
@@ -44,6 +48,9 @@ module FieldHelpers
   end
   def detailed_subjects
     {visibility: 'detailed', type: 'subject'}
+  end
+  def optional_field
+    {display: 'optional'}
   end
 
   # From https://github.com/ebsco/edsapi-ruby/blob/master/lib/ebsco/eds/record.rb#L847
