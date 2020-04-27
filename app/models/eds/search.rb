@@ -14,7 +14,7 @@ class EDS::Search < EDS
   end
 
   def search
-    if on_shelf_facet? || circulating_facet?
+    if on_shelf_facet?
       return empty_search_response
     end
     ensure_login do
