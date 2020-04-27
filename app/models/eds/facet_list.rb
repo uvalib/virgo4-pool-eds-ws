@@ -11,7 +11,7 @@ class EDS::FacetList < EDS
   end
 
   def facets
-    if on_shelf_facet? || circulating_facet?
+    if on_shelf_facet?
       return empty_facet_response
     end
     ensure_login do
