@@ -53,8 +53,9 @@ class EDS::Search < EDS
   def empty_search_response
     self.response = {
       record_list: [],
-      pagination: {},
+      pagination: {total: 0, start: 0, rows: 0},
       confidence: 'low',
+      sort: {sort_id: 'relevance', order: 'desc'},
       debug: {eds_time: 0}
     }.deep_symbolize_keys
   end
