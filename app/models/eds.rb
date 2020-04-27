@@ -91,7 +91,9 @@ class EDS
       "label": "Date"
     }
   ]
-  DEFAULT_SORT = SORT_OPTIONS.first
+
+  # Applied sort in response
+  DEFAULT_SORT = {'sort_id' => 'SortRelevance', 'order' => 'desc' }
 
   # Converts sort param into EDS sort key
   def converted_sort
