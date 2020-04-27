@@ -16,7 +16,7 @@ class EDS
     self.is_guest = params.delete :is_guest || false
     self.params = params
     #default sort
-    self.applied_sort = {sort_id: 'relevance', order: 'desc'}
+    self.applied_sort = DEFAULT_SORT
 
     begin
       self.parsed_query = VirgoParser::EDS.parse(params['query']).to_h
@@ -83,26 +83,27 @@ class EDS
 
   SORT_OPTIONS = [
     {
-      "id": "relevance",
+      "id": "SortRelevance",
       "label": "Relevance"
     },
     {
-      "id": "date",
+      "id": "SortDate",
       "label": "Date"
     }
   ]
+  DEFAULT_SORT = SORT_OPTIONS.first
 
   # Converts sort param into EDS sort key
   def converted_sort
     s = params['sort']
     return if s.nil?
 
-    if s['sort_id'] == 'date' &&
+    if s['sort_id'] == 'SortDate' &&
       s['order'] == 'desc'
       self.applied_sort = s
       return 'date'
 
-    elsif s['sort_id'] == 'date' &&
+    elsif s['sort_id'] == 'SortDate' &&
       s['order'] == 'asc'
       self.applied_sort = s
       return 'date2'
