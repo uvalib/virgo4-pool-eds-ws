@@ -15,6 +15,8 @@ class EDS
     self.response = {}
     self.is_guest = params.delete :is_guest || false
     self.params = params
+    #default sort
+    self.applied_sort = {sort_id: 'relevance', order: 'desc'}
 
     begin
       self.parsed_query = VirgoParser::EDS.parse(params['query']).to_h
@@ -94,7 +96,6 @@ class EDS
   # Converts sort param into EDS sort key
   def converted_sort
     s = params['sort']
-    self.applied_sort = {sort_id: 'relevance', order: 'desc'}
     return if s.nil?
 
     if s['sort_id'] == 'date' &&

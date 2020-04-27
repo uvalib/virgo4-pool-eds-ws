@@ -55,7 +55,6 @@ class EDS::Search < EDS
       record_list: [],
       pagination: {total: 0, start: 0, rows: 0},
       confidence: 'low',
-      sort: {sort_id: 'relevance', order: 'desc'},
       debug: {eds_time: 0}
     }.deep_symbolize_keys
   end
