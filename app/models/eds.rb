@@ -6,7 +6,7 @@ class EDS
   include HTTParty
   base_uri ENV['EDS_BASE_URI']
   format :json
-  default_timeout 15
+  default_timeout 10
 
   attr_accessor :response, :params, :parsed_query, :is_guest, :facets_only, :requested_filters,
                 :peer_reviewed, :applied_sort

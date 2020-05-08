@@ -1,7 +1,7 @@
 class User
   include HTTParty
   base_uri ENV['CLIENT_BACKEND_URL']
-  default_timeout 15
+  default_timeout 10
 
   def self.is_guest? token
     return true if !token.present?

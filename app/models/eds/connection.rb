@@ -4,7 +4,7 @@ module EDS::Connection
   include HTTParty
   base_uri ENV['EDS_BASE_URI']
   format :json
-  default_timeout 15
+  default_timeout 10
 
   attr_accessor :error_message, :status_code
 
