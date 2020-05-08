@@ -24,11 +24,20 @@ class User
   end
 
   def self.healthcheck
+
+    begin
     response = get("/healthcheck")
     if response.success?
       return [true, nil]
     else
-      return [false, "Client Backend Error: #{response.request.inspect} #{response.body}"]
+      return [ false, "User service error: #{response.request.inspect} #{response.body}"]
+    end
+    rescue Errno::ECONNREFUSED => ex
+      return [ false, "User service connection refused: #{ex}" ]
+    rescue Net::ReadTimeout => ex
+      return [ false, "User service read timeout: #{ex}" ]
+    rescue => ex
+      return [ false, "User service error: #{ex.class}" ]
     end
   end
 end

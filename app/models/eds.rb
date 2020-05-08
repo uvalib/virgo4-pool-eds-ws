@@ -210,24 +210,37 @@ class EDS
     healthy = true
     message = nil
 
-    eds = EDS.new 'query' => 'title:{placeholder}'
-    info = eds.info
-    if !info.success?
+    begin
+      eds = EDS.new 'query' => 'title:{placeholder}'
+      info = eds.info
+
+      if info.class != HTTParty::Response || info.success? == false
+        healthy = false
+        message = "EDS info request failed: #{info.inspect}"
+      end
+    rescue Errno::ECONNREFUSED => ex
       healthy = false
-      message = "EDS test response failed: #{info.code} #{info.inspect}"
+      message = "EDS connection refused: #{ex}"
+    rescue Net::ReadTimeout => ex
+      healthy = false
+      message = "EDS read timeout: #{ex}"
+    rescue => ex
+        healthy = false
+        message = "EDS error: #{ex.class}"
+        puts "#{ex.backtrace.join("\n\t")}"
     end
     [healthy, message]
   end
 
   def info
     # dummy request/response for testing connection
-    info = nil
     ensure_login do
       info = self.class.get('/edsapi/rest/info', {format: 'text',
                       headers: auth_headers}
                      )
       return info
     end
+    return {}
   end
 
 end
