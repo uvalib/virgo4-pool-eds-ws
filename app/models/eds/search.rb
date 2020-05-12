@@ -33,9 +33,13 @@ class EDS::Search < EDS
         records = search_response['SearchResult']['Data']['Records'] || []
       end
 
-      confidence = 'medium'
-      if total_hits == 1
+      case total_hits
+      when 0
+        confidence = 'low'
+      when 1
         confidence = 'exact'
+      else
+        confidence = 'medium'
       end
 
       self.response = {
