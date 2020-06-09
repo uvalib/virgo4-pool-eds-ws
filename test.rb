@@ -24,8 +24,9 @@ claims = {
 jwt_token = Rack::JWT::Token.encode(claims, ENV['V4_JWT_KEY'], 'HS256')
 puts jwt_token
 scope do
-  header "Authorization", "Bearer #{jwt_token}"
 
+
+  header "Authorization", "Bearer #{jwt_token}"
   test 'Search' do
     #post '/api/search', {query: 'date:{<1945} AND date:{>1932} AND author:{Shelly}'}
     post '/api/search', {query: 'date:{2010 TO 2020} AND title:{animals}'}
@@ -109,6 +110,7 @@ scope do
 #   assert (dog_count + cat_count ) == (or_count + and_count)
 # end
 
+
   test 'Single Item' do
     get '/api/resource/a9h_8781893'
     assert last_response.ok?
@@ -139,6 +141,18 @@ scope do
     assert last_response.ok?
   end
 
+  test 'Advanced search publisher' do
+    post '/api/search', {query: 'published: {new york}'}
+    assert last_response.ok?
+  end
+
+  test 'Source filter' do
+    post '/api/search', {query: 'filter: {source_f:"Libra Repository"}'}
+    assert last_response.ok?
+  end
+
+
+  # This needs to be last
   test 'Bad Auth' do
     header "Authorization", "Bearer BadJWT"
     get '/api/resource/a9h_8781893'
@@ -150,4 +164,5 @@ scope do
       assert last_response.ok?
     end
   end
+
 end

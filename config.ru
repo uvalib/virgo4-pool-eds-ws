@@ -3,7 +3,7 @@ require 'bundler'
 
 # Auto require Gemfile
 # Some gems need a different require name,
-# generally specify it in the Gemfile instead of here
+# generally specify 'require' in the Gemfile instead of here
 Bundler.require :default, ENV['RACK_ENV']
 require_relative 'config/initializer'
 
