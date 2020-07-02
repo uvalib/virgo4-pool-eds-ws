@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.12
 
 # add necessary packages
 RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git
