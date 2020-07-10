@@ -118,7 +118,7 @@ class Field
   end
 
   def ebsco_url
-    value = record[:PLink]
+    value = 'https://proxy01.its.virginia.edu/login?url=' + record[:PLink]
     { provider: :ebsco, value: value, ris_code: 'UR' }.merge(basic_url)
   end
 
