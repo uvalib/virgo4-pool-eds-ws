@@ -12,7 +12,7 @@ en:
     content_provider: 'Content Provider'
     doi: 'DOI'
     availability: 'Availability'
-    access_online: 'Access Online'
+    access_online: 'Online Access'
     epub_url: 'Epub download'
     pdf_url: 'PDF download'
     full_text: 'Full Text'
