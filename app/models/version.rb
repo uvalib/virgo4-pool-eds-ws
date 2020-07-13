@@ -11,8 +11,5 @@ class Version
     def ruby_version
       ENV['RUBY_VERSION']
     end
-    def git_commit
-      %x{git log --pretty=format:'%h' -n 1}
-    end
   end
 end
