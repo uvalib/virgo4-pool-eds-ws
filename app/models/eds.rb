@@ -35,6 +35,7 @@ class EDS
         includefacets: (self.facets_only ? 'y' : 'n'),
         searchmode: 'all',
         resultsperpage: params['pagination']['rows'],
+        pagenumber: ((params['pagination']['start'] / params['pagination']['rows']) + 1).floor,
         sort: converted_sort,
         view: 'detailed',
         highlight: 'n',
