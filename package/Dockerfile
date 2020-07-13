@@ -1,7 +1,7 @@
 FROM alpine:3.12
 
 # add necessary packages
-RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates
+RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git
 
 # install java 11 JDK
 RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
