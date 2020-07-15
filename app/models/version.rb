@@ -8,8 +8,5 @@ class Version
         'unknown'
       end
     end
-    def ruby_version
-      ENV['RUBY_VERSION']
-    end
   end
 end

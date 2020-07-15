@@ -39,7 +39,7 @@ class EDS
         sort: converted_sort,
         view: 'detailed',
         highlight: 'n',
-        includeimagequickview: 'y',
+        includeimagequickview: (self.facets_only ? 'n' : 'y'),
         # Peer reviewed limiter
         limiter: (self.peer_reviewed ? 'RV:Y' : nil)
     })

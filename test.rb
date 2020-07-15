@@ -151,6 +151,11 @@ scope do
     assert last_response.ok?
   end
 
+  test 'facets' do
+    post '/api/search/facets', {query: 'published: {new york}'}
+    assert last_response.ok?
+  end
+
 
   # This needs to be last
   test 'Bad Auth' do

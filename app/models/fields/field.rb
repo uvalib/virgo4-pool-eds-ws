@@ -22,6 +22,7 @@ class Field
     @bib_entity = record.dig(:RecordInfo, :BibRecord, :BibEntity) || {}
     @bib_relationships = record.dig(:RecordInfo, :BibRecord, :BibRelationships) || {}
 
+    @numbering = []
     bib_relationships[:IsPartOfRelationships].select do |bib|
       @numbering = bib.dig :BibEntity, :Numbering
       break if @numbering

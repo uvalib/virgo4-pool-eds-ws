@@ -6,7 +6,7 @@ class EDS::FacetList < EDS
     super params
     return if self.error_message
 
-    params['pagination'] = {'start' => 0, 'rows' => 0}
+    params['pagination'] = {'start' => 0, 'rows' => 1}
     facets
   end
 
