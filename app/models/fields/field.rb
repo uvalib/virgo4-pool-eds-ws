@@ -23,11 +23,13 @@ class Field
     @bib_relationships = record.dig(:RecordInfo, :BibRecord, :BibRelationships) || {}
 
     @numbering = []
-    bib_relationships[:IsPartOfRelationships].select do |bib|
-      @numbering = bib.dig :BibEntity, :Numbering
-      break if @numbering
+    if @bib_relationships[:IsPartOfRelationships].present?
+      @bib_relationships[:IsPartOfRelationships].select do |bib|
+        @numbering = bib.dig :BibEntity, :Numbering
+        break if @numbering
+      end
     end
-    @items = record.dig(:Items)
+    @items = @record.dig(:Items)
 
     # list is the final output including multi-valued fields
     @list = []
