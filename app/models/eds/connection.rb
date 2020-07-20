@@ -89,7 +89,9 @@ module EDS::Connection
     end
   end
 
+  # EDS error codes: http://edswiki.ebscohost.com/API_Reference_Guide:_Error_Codes
   INVALID_SESSION_CODES = %w(104 108 109 113).freeze
+  NOT_FOUND_CODES = %w(132 135).freeze
 
   def check_session response
     response_code = response.code.to_s
@@ -103,6 +105,9 @@ module EDS::Connection
         # session timeout
         login
         raise 'retry'
+      elsif NOT_FOUND_CODES.include? eds_error_code
+        self.status_code = 404
+        raise 'Record not found'
       else
         raise 'from EDS: ' + response.body
       end
