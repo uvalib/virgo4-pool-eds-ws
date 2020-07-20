@@ -34,7 +34,12 @@ Cuba.define do
       @eds = EDS::Item.new id, is_guest
       if @eds.error_message.present?
         res.status = @eds.status_code
-        res.write({error_message: @eds.error_message}.to_json)
+        if @eds.status_code == 404
+          res.headers['Content-Type'] = 'text/plain'
+          res.write(@eds.error_message)
+        else
+          res.write({error_message: @eds.error_message}.to_json)
+        end
       else
         res.write partial('single_result')
       end
