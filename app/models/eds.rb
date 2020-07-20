@@ -89,7 +89,7 @@ class EDS
     },
     {
       "id": "SortDate",
-      "label": "Date"
+      "label": "Date Published"
     }
   ]
 
