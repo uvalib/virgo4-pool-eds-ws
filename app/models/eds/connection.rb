@@ -5,6 +5,7 @@ module EDS::Connection
   base_uri ENV['EDS_BASE_URI']
   format :json
   default_timeout 10
+  #debug_output $stdout
 
   attr_accessor :error_message, :status_code
 
@@ -28,7 +29,7 @@ module EDS::Connection
                          'Guest' => 'n',
                          'Org' => ENV['EDS_ORG']
                         }.to_json,
-                  headers: base_headers
+                  headers: base_headers, max_retries: 0
                                )
       @@session_token = session['SessionToken']
 
@@ -37,7 +38,7 @@ module EDS::Connection
                          'Guest' => 'y',
                          'Org' => ENV['EDS_ORG']
                         }.to_json,
-                  headers: base_headers
+                  headers: base_headers, max_retries: 0
                                )
       @@guest_session_token = guest_session['SessionToken']
     end

@@ -7,6 +7,7 @@ class EDS
   base_uri ENV['EDS_BASE_URI']
   format :json
   default_timeout 10
+  #debug_output $stdout
 
   attr_accessor :response, :params, :parsed_query, :is_guest, :facets_only, :requested_filters,
                 :peer_reviewed, :applied_sort
@@ -51,7 +52,8 @@ class EDS
     auth = self.is_guest ? guest_auth_headers : auth_headers
     search_response = self.class.get('/edsapi/rest/Search',
                                      query: query,
-                                     headers: auth)
+                                     headers: auth,
+                                     max_retries: 0)
     check_session search_response
     #$logger.debug search_response['SearchRequestGet']
     search_response
@@ -237,7 +239,7 @@ class EDS
     # dummy request/response for testing connection
     ensure_login do
       info = self.class.get('/edsapi/rest/info', {format: 'text',
-                      headers: auth_headers}
+                      headers: auth_headers, max_retries: 0}
                      )
       return info
     end
