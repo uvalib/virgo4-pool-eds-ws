@@ -1,7 +1,4 @@
 class User
-  include HTTParty
-  base_uri ENV['CLIENT_BACKEND_URL']
-  default_timeout 10
 
   def self.is_guest? token
     return true if !token.present?
@@ -20,24 +17,6 @@ class User
       # Should never reach this point since auth is checked at the beginning of the request
       $logger.error "JWT Token decode failed: #{e.message}"
       return true
-    end
-  end
-
-  def self.healthcheck
-
-    begin
-    response = get("/healthcheck")
-    if response.success?
-      return [true, nil]
-    else
-      return [ false, "User service error: #{response.request.inspect} #{response.body}"]
-    end
-    rescue Errno::ECONNREFUSED => ex
-      return [ false, "User service connection refused: #{ex}" ]
-    rescue Net::ReadTimeout => ex
-      return [ false, "User service read timeout: #{ex}" ]
-    rescue => ex
-      return [ false, "User service error: #{ex.class}" ]
     end
   end
 end
