@@ -13,6 +13,7 @@ class Field
     subject language doi
     pub_type content_provider
     image_url,
+    citation_type,
     ris_type
   ).freeze
 
@@ -42,7 +43,7 @@ class Field
   def id
     value = "#{record.dig(:Header, :DbId)}_#{record.dig(:Header, :An)}"
     { name: 'id', label: t('fields.id'), value: value,
-      type: 'identifier', display: 'optional', ris_code: 'ID' }
+      type: 'identifier', display: 'optional', ris_code: 'ID', citation_part: 'id'}
   end
 
 
@@ -56,7 +57,7 @@ class Field
     value = bib_title || item_title || "Please sign in to see more about this article."
 
     basic_text.merge({name: 'title', label: t('fields.title'),
-     value: value, type: 'title', ris_code: 'TI'})
+     value: value, type: 'title', ris_code: 'TI', citation_part: 'title'})
   end
 
   # EDS doesn't have subtitles
@@ -70,6 +71,12 @@ class Field
     })
   end
 
+  def citation_type
+    optional_field.merge({
+      name: 'citation_format', citation_part: 'format', value: 'article'
+    })
+  end
+
   def author
     authors = bib_relationships[:HasContributorRelationships].map do |contrib|
       contrib.dig :PersonEntity, :Name, :NameFull
@@ -77,7 +84,7 @@ class Field
 
     authors.map do |value|
       basic_text.merge({name: 'author', label: t('fields.author'),
-       value: value, type: 'author', ris_code: 'AU'})
+       value: value, type: 'author', ris_code: 'AU', citation_part: 'author'})
     end
   end
 
@@ -85,7 +92,7 @@ class Field
     abstract = get_item_data({name: 'Abstract', label: 'Abstract'})
 
     basic_text.merge({name: 'abstract', label: t('fields.abstract'),
-     value: abstract, ris_code: 'AB' })
+     value: abstract, ris_code: 'AB', citation_part: 'abstract'})
   end
 
   def published_in
@@ -96,7 +103,7 @@ class Field
       break if main_title.present?
     end
     {name: 'published_in', label: t('fields.published_in'),
-     value: main_title, ris_code: 'T2' }.merge(basic_text)
+     value: main_title, ris_code: 'T2', citation_part: 'journal'}.merge(basic_text)
   end
 
   def published_date
@@ -109,7 +116,7 @@ class Field
     if published.present?
       value = "#{published[:Y]}-#{published[:M]}-#{published[:D]}"
       {name: 'published_date', label: t('fields.published_date'),
-       value: value, ris_code: 'DA'}.merge(basic_text)
+       value: value, ris_code: 'DA', citation_part: 'published_date'}.merge(basic_text)
     else
       {}
     end
@@ -122,7 +129,7 @@ class Field
 
   def ebsco_url
     value = 'https://proxy01.its.virginia.edu/login?url=' + record[:PLink]
-    { provider: :ebsco, value: value, ris_code: 'UR' }.merge(basic_url)
+    { provider: :ebsco, value: value, ris_code: 'UR', citation_part: 'url'}.merge(basic_url)
   end
 
   def epub_url
@@ -133,7 +140,7 @@ class Field
     links = record.dig(:FullText, :CustomLinks)
     full_text_link = links.find {|link| link[:Category] == 'fullText'}
     url = full_text_link[:Url] if full_text_link.present?
-    {provider: :serial_solutions, value: url, ris_code: 'L2'}.merge(basic_url)
+    {provider: :serial_solutions, value: url, ris_code: 'L2', citation_part: 'full_text_url'}.merge(basic_url)
   end
   def image_url
     {}
@@ -146,7 +153,7 @@ class Field
     langs = get_item_data({name: 'Language'}) || langs
     langs.map do |lang|
       {name: 'language', label: t('fields.language'),
-       value: lang, ris_code: 'LA'}.merge(detailed_text)
+       value: lang, ris_code: 'LA', citation_part: 'language'}.merge(detailed_text)
     end
   end
 
@@ -154,7 +161,7 @@ class Field
     ids = bib_entity.dig(:Identifiers) || []
     doi = ids.find{|i| i[:Type] == 'doi'}
     if doi.present?
-      { name: 'doi', label: t('fields.doi'), value: doi[:Value], ris_code: 'DO' }.merge(detailed_text)
+      { name: 'doi', label: t('fields.doi'), value: doi[:Value], ris_code: 'DO', citation_part: 'doi'}.merge(detailed_text)
     else
       $logger.debug "Other ids found: #{ids}" if ids.present?
       {}
@@ -198,18 +205,18 @@ class Field
   def content_provider
     value = record.dig :Header, :DbLabel
     {name: 'content_provider', label: t('fields.content_provider'),
-     value: value, ris_code: 'DB' }.merge(detailed_text)
+     value: value, ris_code: 'DB', citation_part: 'content_provider'}.merge(detailed_text)
   end
 
   def volume
     vol = numbering.find {|n| n[:Type] == 'volume'}
     {name: 'volume', label: t('fields.volume'),
-     value: vol[:Value], ris_code: 'VL' }.merge(detailed_text)
+     value: vol[:Value], ris_code: 'VL', citation_part: 'volume'}.merge(detailed_text)
   end
   def issue
     issue = numbering.find {|n| n[:Type] == 'issue'}
     {name: 'issue', label: t('fields.issue'),
-     value: issue[:Value], ris_code: 'IS' }.merge(detailed_text)
+     value: issue[:Value], ris_code: 'IS', citation_part: 'issue'}.merge(detailed_text)
   end
 
   def pages
