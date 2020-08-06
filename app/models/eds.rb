@@ -91,7 +91,9 @@ class EDS
     },
     {
       "id": "SortDate",
-      "label": "Date Published"
+      "label": "Date Published",
+      "asc": "A-Z",
+      "desc": "Z-A"
     }
   ]
 
