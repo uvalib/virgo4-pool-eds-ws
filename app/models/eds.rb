@@ -92,8 +92,8 @@ class EDS
     {
       "id": "SortDate",
       "label": "Date Published",
-      "asc": "A-Z",
-      "desc": "Z-A"
+      "asc": "oldest first",
+      "desc": "newest first"
     }
   ]
 
