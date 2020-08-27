@@ -216,7 +216,7 @@ class Field
     pages = bib_entity.dig :PhysicalDescription, :Pagination
     pages = "#{pages[:StartPage]}-#{pages[:StartPage].to_i + pages[:PageCount].to_i}" if pages
     {name: 'pages', label: t('fields.pages'),
-     value: pages }.merge(detailed_text)
+     value: pages, citation_part: 'pages'}.merge(detailed_text)
   end
 
 end
