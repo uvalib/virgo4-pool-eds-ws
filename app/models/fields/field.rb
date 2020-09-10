@@ -12,8 +12,8 @@ class Field
     volume issue pages
     subject language doi
     pub_type content_provider
-    image_url,
-    citation_format
+    image_url
+    citation_format citation_online
   ).freeze
 
   attr_reader :list, :record, :bib_entity, :bib_relationships, :items, :numbering
@@ -67,6 +67,12 @@ class Field
   def citation_format
     optional_field.merge({
       name: 'citation_format', citation_part: 'format', value: 'article'
+    })
+  end
+
+  def citation_online
+    optional_field.merge({
+      name: 'citation_online', citation_part: 'is_online_only', value: 'true'
     })
   end
 
