@@ -10,7 +10,8 @@ class Field
     id title author published_in published_date abstract availability
     epub_url pdf_url full_text_url ebsco_url
     volume issue pages
-    subject language doi
+    subject language
+    doi issn
     pub_type content_provider
     image_url
     citation_format citation_online
@@ -44,6 +45,8 @@ class Field
     { name: 'id', label: t('fields.id'), value: value,
       type: 'identifier', display: 'optional', citation_part: 'id'}
   end
+
+
 
 
   def title
@@ -107,7 +110,7 @@ class Field
 
   def published_date
     published = ''
-    bib_relationships[:IsPartOfRelationships].select do |bib|
+    bib_relationships[:IsPartOfRelationships].each do |bib|
       dates = bib.dig :BibEntity, :Dates
       published = dates.find {|da| da[:Type] == 'published'}
       break if published.present?
@@ -116,6 +119,17 @@ class Field
       value = "#{published[:Y]}-#{published[:M]}-#{published[:D]}"
       {name: 'published_date', label: t('fields.published_date'),
        value: value, citation_part: 'published_date'}.merge(basic_text)
+    else
+      {}
+    end
+  end
+
+  def issn
+    issn = items.find do |item|
+      item[:Group] == 'ISSN'
+    end
+    if issn.present?
+      detailed_text.merge({name: "ISSN", label: 'ISSN', value: issn[:Data], citation_part: 'serial_number'})
     else
       {}
     end

@@ -53,6 +53,12 @@ scope do
     #puts last_response.body
   end
 
+  test 'long query' do
+    post '/api/search', {query: 'keyword: { I have often thought that nothing would do more extensive good at small expense than the establishment of a small circulating library in every county, to consist of a few well-chosen books, to be lent to the people of the country under regulations as would secure their safe return in due time.I have often thought that nothing would do more extensive good at small expense than the establishment of a small circulating library in every county, to consist of a few well-chosen books, to be lent to the people of the country under regulations as would secure their safe return in due time. }'}
+    assert last_response.ok?
+
+  end
+
 # # This was used to verify boolean logic with EDS queries.
 # # It's pretty slow so commented out after verifying the counts.
 # test 'boolean logic' do
@@ -157,7 +163,7 @@ scope do
   end
 
 
-  # This needs to be last
+  # This needs to be last since it breaks the auth token
   test 'Bad Auth' do
     header "Authorization", "Bearer BadJWT"
     get '/api/resource/a9h_8781893'
