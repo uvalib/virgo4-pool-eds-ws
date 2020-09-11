@@ -234,7 +234,12 @@ class Field
 
   def pages
     pages = bib_entity.dig :PhysicalDescription, :Pagination
-    pages = "#{pages[:StartPage]}-#{pages[:StartPage].to_i + pages[:PageCount].to_i}" if pages
+    return {} unless pages.present?
+    if pages[:PageCount] == 1
+      pages = pages[:StartPage]
+    else
+      pages = "#{pages[:StartPage]}-#{pages[:StartPage].to_i + (pages[:PageCount].to_i - 1)}"
+    end
     {name: 'pages', label: t('fields.pages'),
      value: pages, citation_part: 'pages'}.merge(detailed_text)
   end
