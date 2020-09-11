@@ -235,7 +235,7 @@ class Field
   def pages
     pages = bib_entity.dig :PhysicalDescription, :Pagination
     return {} unless pages.present?
-    if pages[:PageCount] == 1
+    if pages[:PageCount] == '1'
       pages = pages[:StartPage]
     else
       pages = "#{pages[:StartPage]}-#{pages[:StartPage].to_i + (pages[:PageCount].to_i - 1)}"
