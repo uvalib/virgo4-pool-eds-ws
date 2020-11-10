@@ -157,6 +157,11 @@ scope do
     assert last_response.ok?
   end
 
+  test 'journal title' do
+    post '/api/search', {query: 'journal_title: {nature} AND title:{orangutan}'}
+    assert last_response.ok?
+  end
+
   test 'facets' do
     post '/api/search/facets', {query: 'published: {new york}'}
     assert last_response.ok?
