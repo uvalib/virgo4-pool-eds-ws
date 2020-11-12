@@ -89,6 +89,7 @@ module EDS::Connection
         self.status_code = 408
       else
         self.error_message = e.message
+        self.status_code = 500
         $logger.error e.message
       end
     end

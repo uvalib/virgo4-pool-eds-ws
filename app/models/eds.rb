@@ -24,9 +24,8 @@ class EDS
     rescue Exception => e
       self.error_message = e.message
     end
-    return unless valid_request?
+    validate_request
 
-    apply_defaults
   end
 
   def search_params
@@ -42,7 +41,7 @@ class EDS
         highlight: 'n',
         includeimagequickview: (self.facets_only ? 'n' : 'y'),
         # Peer reviewed limiter
-        limiter: (self.peer_reviewed ? 'RV:Y' : nil)
+        limiter: (self.peer_reviewed_only? ? 'RV:Y' : nil)
     })
     query.delete_if {|k, v| v.blank? }
     query
@@ -53,16 +52,17 @@ class EDS
     search_response = self.class.get('/edsapi/rest/Search',
                                      query: query,
                                      headers: auth,
-                                     max_retries: 0)
+                                     max_retries: 0
+                                    )
     check_session search_response
     #$logger.debug search_response['SearchRequestGet']
     search_response
   end
 
-  PEER_REVIEWED_FACET = {'Id' => 'PeerReviewedOnly', 'Label' => 'Peer Reviewed Only',
-                    'AvailableFacetValues' =>[ {'Value' => 'Yes'}, {'Value' => 'No'}],
-                    'Type' => 'radio'
-                    }
+  PEER_REVIEWED_FACET = {'Id' => 'PeerReviewedOnly',
+    'Label' => 'Peer Reviewed Only',
+    'AvailableFacetValues' =>[ 'Value' => 'Yes']
+  }.freeze
 
   def eds_facet_string
     filters = self.requested_filters.reject do |filter|
@@ -124,7 +124,7 @@ class EDS
   FILTER_KEYS = ['facet_id', 'value'].freeze
 
   # add other validations here and follow the pattern
-  def valid_request?
+  def validate_request
     unless params['query'].present?
       self.status_code = 400
       self.error_message = 'Query not present'
@@ -158,17 +158,12 @@ class EDS
     return true
   end
 
-  def apply_defaults
 
-    peer_reviewed_request = requested_filters.find do |f|
-      f['facet_id'] == PEER_REVIEWED_FACET['Id']
-    end
-
-    if peer_reviewed_request.present? && peer_reviewed_request['value'] == 'No'
-      self.peer_reviewed = false
-    else
-      self.peer_reviewed = true
-      self.requested_filters << {'facet_id' => PEER_REVIEWED_FACET['Id'], 'value' => 'Yes'}
+  def peer_reviewed_only?
+    if requested_filters.present?
+      requested_filters.any? do |f|
+        f['facet_id'] == PEER_REVIEWED_FACET['Id'] && f['value'] == 'Yes'
+      end
     end
   end
 
@@ -189,6 +184,7 @@ class EDS
   end
 
   def merge_requested_facets facet_manifest
+    # check each requested filter
     requested_filters.each do |requested_f|
       formatted_f = {"Value" => requested_f['value'] , 'selected' => true }
       # if this facet is in the manifest
@@ -200,7 +196,7 @@ class EDS
         end
       else
         # add the facet
-        label = requested_f['facet_name'] || requested_f['display']['facet']
+        label = requested_f['value'] || requested_f['display']['facet']
         facet_manifest << {"Id" => requested_f['facet_id'],
                             "Label" => label,
                             "AvailableFacetValues" => [formatted_f]
@@ -232,7 +228,7 @@ class EDS
     rescue => ex
         healthy = false
         message = "EDS error: #{ex.class}"
-        puts "#{ex.backtrace.join("\n\t")}"
+        $logger.error "#{ex.backtrace.join("\n\t")}"
     end
     [healthy, message]
   end
