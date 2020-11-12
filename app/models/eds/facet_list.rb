@@ -23,7 +23,7 @@ class EDS::FacetList < EDS
 
       facet_manifest = search_response['SearchResult']['AvailableFacets'] || []
 
-      facet_manifest << PEER_REVIEWED_FACET
+      facet_manifest << PEER_REVIEWED_FACET.deep_dup
 
       # Add requested filters in
       facet_manifest = merge_requested_facets(facet_manifest)
