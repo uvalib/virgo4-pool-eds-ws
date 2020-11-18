@@ -2,7 +2,8 @@ require_relative '../config/cuba'
 
 Cuba.define do
   on post do
-    req.params[:is_guest] = User.is_guest?(req.env['HTTP_AUTHORIZATION'])
+    @user = User.new(req.env['HTTP_AUTHORIZATION'])
+    req.params[:is_guest] = @user.is_guest
 
     on 'api/search/facets' do
 
@@ -30,8 +31,7 @@ Cuba.define do
   on get do
     # Single Item
     on 'api/resource/:id' do |id|
-      is_guest = User.is_guest?(req.env['HTTP_AUTHORIZATION'])
-      @eds = EDS::Item.new id, is_guest
+      @eds = EDS::Item.new id, @user.is_guest
       if @eds.error_message.present?
         res.status = @eds.status_code
         if @eds.status_code == 404
