@@ -1,9 +1,10 @@
 require_relative '../config/cuba'
 
 Cuba.define do
+  @user = User.new(req.env['HTTP_AUTHORIZATION'])
+  req.params[:is_guest] = @user.is_guest
+
   on post do
-    @user = User.new(req.env['HTTP_AUTHORIZATION'])
-    req.params[:is_guest] = @user.is_guest
 
     on 'api/search/facets' do
 

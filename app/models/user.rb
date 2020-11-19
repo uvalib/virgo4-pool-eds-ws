@@ -9,6 +9,7 @@ class User
 
   attr_accessor :default_peer_review, :token, :is_guest, :claims, :client_preferences, :user_id
   def initialize(token)
+    return if token.nil?
     self.token = token
     process_token
     self.is_guest = !claims['isUva']
@@ -16,7 +17,7 @@ class User
 
     get_client_preferences
     self.default_peer_review = client_preferences['defaultPeerReviewedArticles'] || false
-
+    return self
   end
 
   def process_token
@@ -24,8 +25,7 @@ class User
       token = self.token.match(/^Bearer\s+(.*)$/).captures.first
       self.claims = Rack::JWT::Token.decode(token, ENV['V4_JWT_KEY'], true, { algorithm: 'HS256' }).first
     rescue RuntimeError => e
-      # Should never reach this point since auth is checked at the beginning of the request
-      $logger.error "JWT Token decode failed: #{e.message}"
+      $logger.debug "JWT Token decode failed: #{e.message}"
       self.claims = {}
     end
   end

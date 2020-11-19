@@ -181,4 +181,11 @@ scope do
     end
   end
 
+  test 'No Auth' do
+    header "Authorization", nil
+    get '/api/resource/a9h_8781893'
+    assert last_response.unauthorized?
+
+  end
+
 end
