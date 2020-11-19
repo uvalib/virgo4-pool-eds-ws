@@ -133,10 +133,9 @@ class EDS
       self.error_message = 'Query not present'
       return false
     end
+
     unless parsed_query.present?
-      self.status_code = 400
-      self.error_message ||= 'Query Syntax error'
-      return false
+      self.parsed_query['query-0'] = "TX:*"
     end
 
     if params['filters'].present?
@@ -188,7 +187,6 @@ class EDS
 
   def extract_facets_from_query
 
-    puts self.parsed_query
     facets = self.params.dig('filters', 0, 'facets')
     if facets.nil?
       # initialize facets

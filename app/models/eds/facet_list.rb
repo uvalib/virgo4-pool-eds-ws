@@ -62,22 +62,22 @@ class EDS::FacetList < EDS
   end
 
   def merge_requested_facets facet_manifest
+    # EDS does not include the selected facet in the returned list. Add them back here.
     # check each requested filter
     requested_filters.each do |requested_f|
-      formatted_f = {"Value" => requested_f['value'] , 'selected' => true }
+      selected_option = {"Value" => requested_f['value'] , 'selected' => true }
       # if this facet is in the manifest
       if facet = facet_manifest.find {|fm| fm['Id'] == requested_f['facet_id']}
         # if the value does not exist
-        if facet['AvailableFacetValues'].none? {|fv| fv['Value'] == formatted_f['Value']}
+        if facet['AvailableFacetValues'].none? {|fv| fv['Value'] == selected_option['Value']}
           #add the bucket value
-          facet['AvailableFacetValues'] << formatted_f
+          facet['AvailableFacetValues'].unshift selected_option
         end
       else
         # add the facet
-        label = requested_f['value'] || requested_f['display']['facet']
         facet_manifest << {"Id" => requested_f['facet_id'],
-                            "Label" => label,
-                            "AvailableFacetValues" => [formatted_f]
+                            "Label" => requested_f['facet_name'],
+                            "AvailableFacetValues" => [selected_option]
         }
       end
     end
