@@ -35,7 +35,11 @@ class User
     return if self.user_id.nil? || self.user_id == 'anonymous'
     #$logger.debug "Looking up user preferences for #{self.user_id}"
 
-    user_resp = self.class.get("/api/users/#{self.user_id}/preferences", headers: {Authorization: self.token})
+    begin
+      user_resp = self.class.get("/api/users/#{self.user_id}/preferences", headers: {Authorization: self.token})
+    rescue => ex
+      $logger.error "#{ex.backtrace.join("\n\t")}"
+    end
 
     if user_resp.success?
       self.client_preferences = user_resp.parsed_response

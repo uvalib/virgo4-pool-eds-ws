@@ -62,7 +62,7 @@ class EDS::FacetList < EDS
   end
 
   def merge_requested_facets facet_manifest
-    # EDS does not include the selected facet in the returned list. Add them back here.
+    # For some facets (not sure why), EDS does not include the selected facet in the returned list. Add them back here.
     # check each requested filter
     requested_filters.each do |requested_f|
       selected_option = {"Value" => requested_f['value'] , 'selected' => true }
