@@ -37,14 +37,13 @@ class User
 
     begin
       user_resp = self.class.get("/api/users/#{self.user_id}/preferences", headers: {Authorization: self.token})
+      if user_resp.success?
+        self.client_preferences = user_resp.parsed_response
+      else
+        $logger.error "Failed User preferences response: #{user_resp.body}"
+      end
     rescue => ex
       $logger.error "#{ex.backtrace.join("\n\t")}"
-    end
-
-    if user_resp.success?
-      self.client_preferences = user_resp.parsed_response
-    else
-      $logger.error "Failed User preferences response: #{user_resp.body}"
     end
   end
 end
