@@ -24,9 +24,19 @@ claims = {
 jwt_token = Rack::JWT::Token.encode(claims, ENV['V4_JWT_KEY'], 'HS256')
 puts jwt_token
 scope do
-
-
   header "Authorization", "Bearer #{jwt_token}"
+
+  test 'Facets in query' do
+    post '/api/search', {query: 'keyword: {"organic chemistry"} AND ( filter: {FilterSourceType:"Academic Journals"}  OR filter:{FilterLanguage:"English"})' }
+    assert last_response.ok?
+
+    post '/api/search', {query: "keyword: {organic chemistry} AND filter: {FilterLanguage:\"English\"} AND journal_title: {nature}",
+      filters: [facets: [{"facet_id"=>"SourceType", "value"=>"Academic Journals"}] ]
+    }
+    assert last_response.ok?
+
+  end
+
   test 'Search' do
     #post '/api/search', {query: 'date:{<1945} AND date:{>1932} AND author:{Shelly}'}
     post '/api/search', {query: 'date:{2010 TO 2020} AND title:{animals}'}
@@ -36,8 +46,7 @@ scope do
 
   test 'Filters' do
     post '/api/search', {query: 'date:{1932  TO 1945} AND author:{Shelly}',
-      filters: [facets: [{"facet_id"=>"SourceType", "value"=>"Academic Journals"}]
-    ]
+      filters: [facets: [{"facet_id"=>"SourceType", "value"=>"Academic Journals"}] ]
     }
     #puts last_response.body
     assert last_response.ok?
@@ -164,6 +173,13 @@ scope do
 
   test 'facets' do
     post '/api/search/facets', {query: 'published: {new york}'}
+    assert last_response.ok?
+  end
+
+  test 'facets with filter in query' do
+    post '/api/search/facets', {query: "keyword: {organic chemistry} AND filter: {FilterLanguage:\"English\"} AND journal_title: {nature}",
+      filters: [facets: [{"facet_id"=>"SourceType", "value"=>"Academic Journals"}] ]
+    }
     assert last_response.ok?
   end
 

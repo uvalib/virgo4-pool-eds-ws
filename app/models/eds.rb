@@ -14,6 +14,7 @@ class EDS
 
   def initialize params
     self.response = {}
+    self.requested_filters = []
     self.is_guest = params.delete :is_guest || false
     self.params = params
     #default sort
@@ -22,8 +23,10 @@ class EDS
     begin
       self.parsed_query = VirgoParser::EDS.parse(params['query']).to_h
     rescue Exception => e
+      self.parsed_query = {}
       self.error_message = e.message
     end
+    extract_facets_from_query
     validate_request
 
   end
@@ -183,27 +186,31 @@ class EDS
     end
   end
 
-  def merge_requested_facets facet_manifest
-    # check each requested filter
-    requested_filters.each do |requested_f|
-      formatted_f = {"Value" => requested_f['value'] , 'selected' => true }
-      # if this facet is in the manifest
-      if facet = facet_manifest.find {|fm| fm['Id'] == requested_f['facet_id']}
-        # if the value does not exist
-        if facet['AvailableFacetValues'].none? {|fv| fv['Value'] == formatted_f['Value']}
-          #add the bucket value
-          facet['AvailableFacetValues'] << formatted_f
-        end
-      else
-        # add the facet
-        label = requested_f['value'] || requested_f['display']['facet']
-        facet_manifest << {"Id" => requested_f['facet_id'],
-                            "Label" => label,
-                            "AvailableFacetValues" => [formatted_f]
+  def extract_facets_from_query
+
+    puts self.parsed_query
+    facets = self.params.dig('filters', 0, 'facets')
+    if facets.nil?
+      # initialize facets
+      self.params['filters'] = [{'facets' => []}]
+      facets = self.params.dig('filters', 0, 'facets')
+    end
+
+    self.parsed_query = parsed_query.select do |query_id, query_str|
+
+      if matches = query_str.match(/Filter(\w*): \\\"(.*)\\\"/i)
+        # Convert to facet
+         facets << {
+          'facet_id' => matches[1],
+          'value' => matches[2].strip
         }
+        # remove from query
+        false
+      else
+        # Keep in query
+        true
       end
     end
-    facet_manifest
   end
 
   def self.healthcheck
