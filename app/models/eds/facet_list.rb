@@ -1,5 +1,6 @@
 class EDS::FacetList < EDS
 
+  PRESERVE_CASE = %w(ContentProvider).freeze
 
   def initialize params
     self.facets_only = true
@@ -65,19 +66,19 @@ class EDS::FacetList < EDS
     # For some facets (not sure why), EDS does not include the selected facet in the returned list. Add them back here.
     # check each requested filter
     requested_filters.each do |requested_f|
-      selected_option = {"Value" => requested_f['value'] , 'selected' => true }
+      formatted_option = {"Value" => requested_f['value'] , 'selected' => true }
       # if this facet is in the manifest
       if facet = facet_manifest.find {|fm| fm['Id'] == requested_f['facet_id']}
         # if the value does not exist
-        if facet['AvailableFacetValues'].none? {|fv| fv['Value'] == selected_option['Value']}
+        if facet['AvailableFacetValues'].none? {|fv| fv['Value'].downcase == requested_f['value'].downcase}
           #add the bucket value
-          facet['AvailableFacetValues'].unshift selected_option
+          facet['AvailableFacetValues'].unshift formatted_option
         end
       else
         # add the facet
         facet_manifest << {"Id" => requested_f['facet_id'],
-                            "Label" => requested_f['facet_name'],
-                            "AvailableFacetValues" => [selected_option]
+                            "Label" => requested_f['facet_id'],
+                            "AvailableFacetValues" => [formatted_option]
         }
       end
     end
