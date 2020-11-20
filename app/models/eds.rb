@@ -82,7 +82,7 @@ class EDS
 
     facet_str = "1"
     filters.each do |filter|
-      facet_str += ",#{filter['facet_id']}:#{filter['value'].gsub(/[:,]/, '/\1')}"
+      facet_str += ",#{filter['facet_id']}:#{filter['value'].gsub(/[:,]/, '\\\\\0')}"
     end
     facet_str
   end
