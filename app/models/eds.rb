@@ -200,7 +200,7 @@ class EDS
         # Convert to facet
          facets << {
           'facet_id' => matches[1],
-          'value' => matches[2].strip
+          'value' => matches[2].gsub('\\', '').strip
         }
         # remove from query
         false
