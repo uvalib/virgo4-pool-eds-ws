@@ -1,12 +1,12 @@
 require_relative '../config/cuba'
 
 Cuba.define do
-  @user = User.new(req.env['HTTP_AUTHORIZATION'])
-  req.params[:is_guest] = @user.is_guest
 
   on post do
 
     on 'api/search/facets' do
+      @user = User.new(req.env['HTTP_AUTHORIZATION'])
+      req.params[:is_guest] = @user.is_guest
 
       @facets = EDS::FacetList.new req.params
       if @facets.error_message.present?
@@ -19,6 +19,8 @@ Cuba.define do
 
     # Main Search
     on 'api/search' do
+      @user = User.new(req.env['HTTP_AUTHORIZATION'])
+      req.params[:is_guest] = @user.is_guest
 
       @eds = EDS::Search.new req.params
       if @eds.error_message.present?
@@ -32,6 +34,8 @@ Cuba.define do
   on get do
     # Single Item
     on 'api/resource/:id' do |id|
+      @user = User.new(req.env['HTTP_AUTHORIZATION'])
+      req.params[:is_guest] = @user.is_guest
       @eds = EDS::Item.new id, @user.is_guest
       if @eds.error_message.present?
         res.status = @eds.status_code
@@ -54,6 +58,7 @@ Cuba.define do
     on 'version' do
       res.write partial('version')
     end
+
     on 'identify' do
       res.write partial("_identify")
     end

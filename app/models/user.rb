@@ -32,6 +32,7 @@ class User
 
   def get_client_preferences
     self.client_preferences = {}
+    return
     return if self.user_id.nil? || self.user_id == 'anonymous'
     #$logger.debug "Looking up user preferences for #{self.user_id}"
 
@@ -43,7 +44,7 @@ class User
         $logger.error "Failed User preferences response: #{user_resp.body}"
       end
     rescue => ex
-      $logger.error "#{ex.backtrace.join("\n\t")}"
+      $logger.error "preferences API error: #{e.message}"
     end
   end
 end
