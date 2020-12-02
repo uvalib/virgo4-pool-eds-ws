@@ -24,7 +24,9 @@ class EDS
       self.parsed_query = VirgoParser::EDS.parse(params['query']).to_h
     rescue Exception => e
       self.parsed_query = {}
+      self.status_code = 400
       self.error_message = e.message
+      return
     end
     extract_facets_from_query
     validate_request
