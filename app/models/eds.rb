@@ -65,8 +65,7 @@ class EDS
   end
 
   PEER_REVIEWED_FACET = {'Id' => 'PeerReviewedOnly',
-    'Label' => 'Peer Reviewed Only',
-    'AvailableFacetValues' =>[ 'Value' => 'Yes']
+    'AvailableFacetValues' =>[ 'Value' => 'Peer Reviewed Only']
   }.freeze
 
   def eds_facet_string
@@ -166,7 +165,7 @@ class EDS
   def peer_reviewed_only?
     if requested_filters.present?
       requested_filters.any? do |f|
-        f['facet_id'] == PEER_REVIEWED_FACET['Id'] && f['value'] == 'Yes'
+        f['facet_id'] == PEER_REVIEWED_FACET['Id'] && f['value'] == 'Peer Reviewed Only'
       end
     end
   end
