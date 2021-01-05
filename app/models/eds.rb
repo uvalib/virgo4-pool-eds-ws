@@ -71,8 +71,8 @@ class EDS
   def eds_facet_string
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
-      (filter['facet_id'] == 'FacetAvailability') ||
-      (filter['facet_id'] == 'FacetCirculating') ||
+      (filter['facet_id'] == 'FilterAvailability') ||
+      (filter['facet_id'] == 'FilterCirculating') ||
       # remove Peer Reviewed
       ( filter['facet_id'] == PEER_REVIEWED_FACET['Id'])
     end
@@ -173,7 +173,7 @@ class EDS
   def on_shelf_facet?
     if requested_filters.present?
       requested_filters.any? do |filter|
-        filter['facet_id'] == 'FacetAvailability' && filter['value'] == 'On shelf'
+        filter['facet_id'] == 'FilterAvailability' && filter['value'] == 'On shelf'
       end
     end
   end
@@ -181,7 +181,7 @@ class EDS
   def circulating_facet?
     if requested_filters.present?
       requested_filters.any? do |filter|
-        filter['facet_id'] == 'FacetCirculating'
+        filter['facet_id'] == 'FilterCirculating'
       end
     end
   end
