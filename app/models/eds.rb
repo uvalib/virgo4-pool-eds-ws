@@ -83,11 +83,7 @@ class EDS
 
     facet_str = "1"
     filters.each do |filter|
-      # convert facet overrides back to the EDS version
-      if override_key = FacetList::OVERRIDE_KEYS.detect {|k,v| v == filter['facet_id'] }
-        filter['facet_id'] = override_key[0]
-      end
-
+      filter['facet_id'].gsub!(/^Filter/, '')
       facet_str += ",#{filter['facet_id']}:#{filter['value'].gsub(/[:,]/, '\\\\\0')}"
     end
     facet_str
