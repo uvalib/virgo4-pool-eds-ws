@@ -1,6 +1,12 @@
 class EDS::FacetList < EDS
 
+  # This list of facets will not have the case of their values modified
+  # EDS requires the case to match, sometimes
   PRESERVE_CASE = %w(ContentProvider).freeze
+
+  # Some filters need to match a common list
+  # format is {"EDS facet id": "V4 facet id"}
+  OVERRIDE_KEYS = {'SubjectGeographic' => 'FilterSubjectGeographic'}.freeze
 
   def initialize params
     self.facets_only = true
@@ -29,9 +35,14 @@ class EDS::FacetList < EDS
       # Add requested filters in
       facet_manifest = merge_requested_facets(facet_manifest)
 
-
-      # Mark selected Facets
       facet_Manifest = facet_manifest.map do |facet|
+
+        # convert keys
+        if override_key = OVERRIDE_KEYS[facet['Id']]
+          facet['Id'] = override_key
+        end
+
+        # Mark selected Facets
         facet_selected = requested_filters.detect do |requested_f|
           facet['Id'] == requested_f['facet_id']
         end
@@ -53,7 +64,6 @@ class EDS::FacetList < EDS
       end
 
       sort_facets facet_manifest
-
 
       self.response = {
         facet_list: facet_manifest,
