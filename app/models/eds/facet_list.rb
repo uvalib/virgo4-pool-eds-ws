@@ -91,6 +91,8 @@ class EDS::FacetList < EDS
   def sort_facets facet_manifest
     # ABC sort facets
     facet_manifest.sort_by! do |f|
+      if f['Id'] == 'FilterAvailability'
+        '0'
       if f['Id'] == 'PeerReviewedOnly'
         '1'
       else
