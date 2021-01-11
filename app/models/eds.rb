@@ -71,8 +71,8 @@ class EDS
   def eds_facet_string
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
-      (filter['facet_id'] == 'FilterAvailability') ||
-      (filter['facet_id'] == 'FilterCirculating') ||
+      (filter['facet_id'] == 'Availability') ||
+      (filter['facet_id'] == 'Circulating') ||
       # remove Peer Reviewed
       ( filter['facet_id'] == PEER_REVIEWED_FACET['Id'])
     end
@@ -83,7 +83,6 @@ class EDS
 
     facet_str = "1"
     filters.each do |filter|
-      filter['facet_id'].gsub!(/^Filter/, '')
       facet_str += ",#{filter['facet_id']}:#{filter['value'].gsub(/[:,]/, '\\\\\0')}"
     end
     facet_str
@@ -149,12 +148,18 @@ class EDS
       end
 
       filters = params['filters'].first['facets']
-      # Check if given keys match required FILTER_KEYS
-      given_keys = filters.reduce([]) {|keys, item| keys | item.keys}
-      if given_keys.include? FILTER_KEYS
-        self.status_code = 400
-        self.error_message = "Available filter keys are: #{FILTER_KEYS.to_sentence}"
-        return false
+
+      filters.map! do |f|
+        # Check if given keys match required FILTER_KEYS
+        if (FILTER_KEYS - f.keys).present?
+          self.status_code = 400
+          self.error_message = "Required filter keys are: #{FILTER_KEYS.to_sentence}"
+          return false
+        end
+
+        # Fix id/labels
+        f['facet_id'].gsub!(/^Filter/, '')
+        f
       end
     end
 
@@ -174,7 +179,7 @@ class EDS
   def on_shelf_facet?
     if requested_filters.present?
       requested_filters.any? do |filter|
-        filter['facet_id'] == 'FilterAvailability' && filter['value'] == 'On shelf'
+        filter['facet_id'] == 'Availability' && filter['value'] == 'On shelf'
       end
     end
   end
@@ -182,7 +187,7 @@ class EDS
   def circulating_facet?
     if requested_filters.present?
       requested_filters.any? do |filter|
-        filter['facet_id'] == 'FilterCirculating'
+        filter['facet_id'] == 'Circulating'
       end
     end
   end
