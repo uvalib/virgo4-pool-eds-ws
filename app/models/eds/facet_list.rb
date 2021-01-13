@@ -97,7 +97,7 @@ class EDS::FacetList < EDS
     facet_manifest.sort_by! do |f|
       if f['Id'] == 'PeerReviewedOnly'
         '0'
-      elsif f['Id'] == 'FilterAvailability'
+      elsif f['Id'] == 'Availability'
         '1'
       else
         f['Label']
