@@ -71,8 +71,8 @@ class EDS
   def eds_facet_string
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
-      (filter['facet_id'] == 'Availability') ||
-      (filter['facet_id'] == 'Circulating') ||
+      (filter['facet_id'] == 'FilterAvailability') ||
+      (filter['facet_id'] == 'FilterCirculating') ||
 
       # remove Peer Reviewed
       ( filter['facet_id'] == PEER_REVIEWED_FACET['Id'])
@@ -84,7 +84,9 @@ class EDS
 
     facet_str = "1"
     filters.each do |filter|
-      facet_str += ",#{filter['facet_id']}:#{filter['value'].gsub(/[:,]/, '\\\\\0')}"
+      # drop the Filter prefix
+      eds_filter_id = filter['facet_id'].gsub(/^Filter/, '')
+      facet_str += ",#{eds_filter_id}:#{filter['value'].gsub(/[:,]/, '\\\\\0')}"
     end
     facet_str
   end
@@ -157,10 +159,6 @@ class EDS
           self.error_message = "Required filter keys are: #{FILTER_KEYS.to_sentence}"
           return false
         end
-
-        # Fix id/labels
-        f['facet_id'].gsub!(/^Filter/, '')
-
         f
       end
     end

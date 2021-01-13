@@ -69,6 +69,13 @@ class EDS::FacetList < EDS
     # check each requested filter
     requested_filters.each do |requested_f|
       formatted_option = {"Value" => requested_f['value'] , 'selected' => true }
+
+      if requested_f['facet_id'].start_with?('Filter')
+        # check for Filter prefix and add modify the id if found.
+        matchingFilter = facet_manifest.find {|fm| "Filter#{fm['Id']}" == requested_f['facet_id']}
+        matchingFilter['Id'] = "Filter#{matchingFilter['Id']}" if matchingFilter.present?
+      end
+
       # if this facet is in the manifest
       if facet = facet_manifest.find {|fm| fm['Id'] == requested_f['facet_id']}
         # if the value does not exist
@@ -78,13 +85,15 @@ class EDS::FacetList < EDS
         end
 
       # Include these filters even though EDS doesn't use them.
-      # They must start with "Filter" so they can be removed from the eds query
       elsif PASSTHROUGH_FILTERS.include?({requested_f['facet_id'] => requested_f['value']})
         # add the facet
         facet_manifest << {"Id" => requested_f['facet_id'],
                             "Label" => requested_f['facet_id'],
                             "AvailableFacetValues" => [formatted_option]
         }
+
+      else
+        # Dont include requested filters not in the EDS list
       end
     end
     facet_manifest
