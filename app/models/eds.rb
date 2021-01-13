@@ -71,8 +71,7 @@ class EDS
   def eds_facet_string
     filters = self.requested_filters.reject do |filter|
       # remove online availability from EDS request
-      (filter['facet_id'] == 'Availability') ||
-      (filter['facet_id'] == 'Circulating') ||
+      (filter['facet_id'].start_with?('Filter')) ||
       # remove Peer Reviewed
       ( filter['facet_id'] == PEER_REVIEWED_FACET['Id'])
     end
@@ -157,8 +156,6 @@ class EDS
           return false
         end
 
-        # Fix id/labels
-        f['facet_id'].gsub!(/^Filter/, '')
         f
       end
     end
