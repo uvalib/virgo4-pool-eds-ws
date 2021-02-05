@@ -212,7 +212,7 @@ class Field
   def pub_type
     value = record.dig :Header, :PubType
     {name: 'pub_type', label: t('fields.pub_type'),
-     value: value }.merge(detailed_text)
+     value: value, citation_part: 'publication_type'}.merge(detailed_text)
   end
 
   def content_provider
