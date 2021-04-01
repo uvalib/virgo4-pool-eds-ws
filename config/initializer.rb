@@ -35,7 +35,7 @@ end
 unless ENV['V4_JWT_KEY']
   throw "V4_JWT_KEY required."
 end
-NO_AUTH_PATHS = %w(/version /identify /healthcheck)
+NO_AUTH_PATHS = %w(/version /identify /healthcheck /api/providers)
 Cuba.use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algorithm: 'HS256' },
                            exclude: NO_AUTH_PATHS
                           }
