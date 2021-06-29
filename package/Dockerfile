@@ -1,7 +1,7 @@
 FROM alpine:3.13
 
 # add necessary packages
-RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git
+RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git && rm -rf /var/cache/apk/*
 
 # install java 11 JDK
 RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
@@ -51,3 +51,7 @@ RUN test -n "$BUILD_TAG" && touch $APP_HOME/buildtag.build-$BUILD_TAG || touch $
 
 # specify the user
 USER docker
+
+#
+# end of file
+#
