@@ -7,7 +7,7 @@ class Field
   # To add a new field, append it to this list and create a method with the same name below.
   # I18n translations use this same name.
   FIELD_NAMES= %i(
-    id title author published_in published_date abstract availability
+    id title author published_in published_date abstract
     epub_url pdf_url full_text_url ebsco_url
     volume issue pages
     subject language
