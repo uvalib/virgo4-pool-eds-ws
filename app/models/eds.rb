@@ -40,7 +40,7 @@ class EDS
         includefacets: (self.facets_only ? 'y' : 'n'),
         searchmode: 'all',
         resultsperpage: params['pagination']['rows'],
-        pagenumber: ((params['pagination']['start'] / params['pagination']['rows']) + 1).floor,
+        pagenumber: calculate_page_number,
         sort: converted_sort,
         view: 'detailed',
         highlight: 'n',
@@ -216,6 +216,12 @@ class EDS
         true
       end
     end
+  end
+
+  def calculate_page_number
+    return 1 if params['pagination']['rows'] <= 0
+
+    return ((params['pagination']['start'] / params['pagination']['rows']) + 1).floor
   end
 
   def self.healthcheck
