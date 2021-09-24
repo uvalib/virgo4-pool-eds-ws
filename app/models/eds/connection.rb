@@ -96,7 +96,7 @@ module EDS::Connection
   end
 
   # EDS error codes: http://edswiki.ebscohost.com/API_Reference_Guide:_Error_Codes
-  INVALID_SESSION_CODES = %w(104 108 109 113).freeze
+  INVALID_SESSION_CODES = %w(104 108 109 113 141).freeze
   NOT_FOUND_CODES = %w(132 135).freeze
 
   def check_session response
@@ -104,7 +104,7 @@ module EDS::Connection
     self.status_code = response_code
     case response_code
     when /4\d\d/
-      $logger.error '4xx code received from EDS ' + response.body
+      $logger.error "#{response.code} code received from EDS \nQuery:\n#{response.request.query}\n\nResponse:\n#{response.body}"
 
       eds_error_code = response['ErrorNumber']
       if INVALID_SESSION_CODES.include? eds_error_code
