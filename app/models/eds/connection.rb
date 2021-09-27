@@ -104,7 +104,7 @@ module EDS::Connection
     self.status_code = response_code
     case response_code
     when /4\d\d/
-      $logger.error "#{response.code} code received from EDS \nQuery:\n#{response.request.query}\n\nResponse:\n#{response.body}"
+      $logger.error "#{response.code} code received from EDS \nQuery:\n#{response.request.inspect}\n\nResponse:\n#{response.body}"
 
       eds_error_code = response['ErrorNumber']
       if INVALID_SESSION_CODES.include? eds_error_code
