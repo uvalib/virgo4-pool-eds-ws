@@ -30,8 +30,12 @@ module EDS::Connection
                          'Org' => ENV['EDS_ORG']
                         }.to_json,
                   headers: base_headers, max_retries: 0
-                               )
-      @@session_token = session['SessionToken']
+      )
+      if session.success?
+        @@session_token = session['SessionToken']
+      else
+        $logger.error "Unable to get EDS Session Token: #{session.inspect}"
+      end
 
       guest_session = self.class.post('/edsapi/rest/CreateSession',
                   body: {'Profile' => ENV['EDS_PROFILE'],
@@ -41,6 +45,11 @@ module EDS::Connection
                   headers: base_headers, max_retries: 0
                                )
       @@guest_session_token = guest_session['SessionToken']
+      if guest_session.success?
+        @@guest_session_token = guest_session['SessionToken']
+      else
+        $logger.error "Unable to get EDS Session Token: #{guest_session.inspect}"
+      end
     end
   end
 
