@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/alpine:3.14
+FROM public.ecr.aws/docker/library/alpine:3.16
 
 # add necessary packages
 RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git && rm -rf /var/cache/apk/*
