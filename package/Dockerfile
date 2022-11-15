@@ -3,8 +3,8 @@ FROM public.ecr.aws/docker/library/alpine:3.16
 # add necessary packages
 RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git && rm -rf /var/cache/apk/*
 
-# install java 11 JDK
-RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+# install java 17 JDK
+RUN apk --no-cache add openjdk17 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # install jruby
 ADD .ruby-version /tmp
@@ -29,8 +29,11 @@ RUN rm -rf tmp/cache/*
 # add necessary gems
 RUN jgem install bundler -v 2.1.4
 
+# see: https://github.com/jruby/jruby/issues/6475
+ENV JAVA_OPTS="--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED"
+
 # bundle
-RUN bundle install --jobs=4 --without=["development" "test"] --force
+RUN bundle install --jobs=4 --without=["development" "test"] --redownload
 
 # install the app
 COPY . $APP_HOME
