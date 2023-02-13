@@ -1,10 +1,7 @@
-FROM public.ecr.aws/docker/library/alpine:3.17
+FROM amazoncorretto:17-alpine3.17
 
 # add necessary packages
 RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git && rm -rf /var/cache/apk/*
-
-# install java 17 JDK
-RUN apk --no-cache add openjdk17 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # install jruby
 ADD .ruby-version /tmp
