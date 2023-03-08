@@ -36,8 +36,12 @@ GEM
     mime-types-data (3.2020.1104)
     minitest (5.14.2)
     multi_xml (0.6.0)
+    nio4r (2.5.4)
     nio4r (2.5.4-java)
-    nokogiri (1.10.10-java)
+    nokogiri (1.13.10-java)
+      racc (~> 1.4)
+    nokogiri (1.13.10-x86_64-linux)
+      racc (~> 1.4)
     prometheus-client (2.1.0)
     pry (0.13.1-java)
       coderay (~> 1.1)
@@ -46,8 +50,12 @@ GEM
     pry-debugger-jruby (2.0.0-java)
       pry (>= 0.13, < 0.14)
       ruby-debug-base (>= 0.10.4, < 0.12)
+    puma (5.0.4)
+      nio4r (~> 2.0)
     puma (5.0.4-java)
       nio4r (~> 2.0)
+    racc (1.6.2)
+    racc (1.6.2-java)
     rack (2.0.9)
     rack-contrib (2.2.0)
       rack (~> 2.0)
@@ -63,6 +71,7 @@ GEM
     ruby-debug-base (0.11.0-java)
     spoon (0.0.6)
       ffi
+    thread_safe (0.3.6)
     thread_safe (0.3.6-java)
     tilt (2.0.10)
     tilt-jbuilder (0.7.1)
@@ -74,6 +83,7 @@ GEM
 
 PLATFORMS
   java
+  x86_64-linux
 
 DEPENDENCIES
   cuba
