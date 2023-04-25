@@ -141,7 +141,7 @@ class Field
   end
 
   def ebsco_url
-    value = 'https://proxy01.its.virginia.edu/login?url=' + record[:PLink]
+    value = "https://#{ENV['PROXY_BASE_URL']}/login?url=#{record[:PLink]}"
     { provider: :ebsco, value: value, citation_part: 'url'}.merge(basic_url)
   end
 

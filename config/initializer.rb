@@ -36,9 +36,17 @@ unless ENV['V4_JWT_KEY']
   throw "V4_JWT_KEY required."
 end
 NO_AUTH_PATHS = %w(/version /identify /healthcheck /api/providers)
-Cuba.use Rack::JWT::Auth, {secret: ENV['V4_JWT_KEY'], verify: true, options: { algorithm: 'HS256' },
-                           exclude: NO_AUTH_PATHS
-                          }
+Cuba.use Rack::JWT::Auth, {
+  secret: ENV['V4_JWT_KEY'],
+  verify: true,
+  options: { algorithm: 'HS256' },
+  exclude: NO_AUTH_PATHS
+}
+
+# Required ENV
+unless ENV['PROXY_BASE_URL']
+  throw "PROXY_BASE_URL required."
+end
 
 #
 # Converts POST body to params
