@@ -107,6 +107,7 @@ module EDS::Connection
   # EDS error codes: http://edswiki.ebscohost.com/API_Reference_Guide:_Error_Codes
   INVALID_SESSION_CODES = %w(104 108 109 113 141).freeze
   NOT_FOUND_CODES = %w(132 135).freeze
+  MAX_RECORD_LIMIT_CODE = "139".freeze
 
   def check_session response
     response_code = response.code.to_s
@@ -123,8 +124,10 @@ module EDS::Connection
       elsif NOT_FOUND_CODES.include? eds_error_code
         self.status_code = 404
         raise 'Record not found'
+      elsif eds_error_code == MAX_RECORD_LIMIT_CODE
+        raise "The vendor limits access to search results from this query to the first 250.  Please try a more specific search if you're not finding what you're looking for in the first few pages."
       else
-        raise 'from EDS: ' + response.body
+        raise 'Error from EBSCO: ' + (response.parsed_response["DetailedErrorDescription"] || response.body)
       end
 
     when /5\d\d/

@@ -11,7 +11,7 @@ Cuba.define do
       @facets = EDS::FacetList.new req.params
       if @facets.error_message.present?
         res.status = @facets.status_code
-        res.write({error_message: @facets.error_message}.to_json)
+        res.write({status: res.status, status_msg: @facets.error_message}.to_json)
       else
         res.write partial('facets_result')
       end
@@ -25,7 +25,7 @@ Cuba.define do
       @eds = EDS::Search.new req.params
       if @eds.error_message.present?
         res.status = @eds.status_code
-        res.write({error_message: @eds.error_message}.to_json)
+        res.write({status: res.status, status_msg: @eds.error_message}.to_json)
       else
         res.write partial('pool_result')
       end
@@ -43,7 +43,7 @@ Cuba.define do
           res.headers['Content-Type'] = 'text/plain'
           res.write(@eds.error_message)
         else
-          res.write({error_message: @eds.error_message}.to_json)
+          res.write({status: res.status, status_msg: @eds.error_message}.to_json)
         end
       else
         res.write partial('single_result')
