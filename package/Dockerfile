@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-alpine3.17
+FROM public.ecr.aws/docker/library/amazoncorretto:17-alpine3.18
 
 # add necessary packages
 RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git && rm -rf /var/cache/apk/*
