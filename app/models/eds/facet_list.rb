@@ -2,7 +2,7 @@ class EDS::FacetList < EDS
 
   # This list of facets will not have the case of their values modified
   # EDS requires the case to match, sometimes
-  PRESERVE_CASE = %w(ContentProvider).freeze
+  PRESERVE_CASE = %w(ContentProvider RangeLexile).freeze
 
   def initialize params
     self.facets_only = true
