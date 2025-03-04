@@ -92,6 +92,14 @@ class EDS::FacetList < EDS
                             "AvailableFacetValues" => [formatted_option]
         }
 
+      # Lexile range isn't returned as a facet, even if it was applied
+      # search_response['SearchRequestGet']['SearchCriteriaWithActions']['FacetFiltersWithAction']
+      elsif requested_f['facet_id'] == 'RangeLexile'
+        facet_manifest << {"Id" => requested_f['facet_id'],
+          "Label" => "Lexile Range",
+          "AvailableFacetValues" => [formatted_option]
+        }
+
       else
         # Dont include requested filters not in the EDS list
       end
