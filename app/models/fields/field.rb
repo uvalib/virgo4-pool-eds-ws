@@ -1,5 +1,6 @@
 class Field
   require 'nokogiri'
+  require 'loofah'
   require_relative 'field_helpers'
   include FieldHelpers
 
@@ -129,7 +130,9 @@ class Field
       item[:Group] == 'ISSN'
     end
     if issn.present?
-      detailed_text.merge({name: "ISSN", label: 'ISSN', value: issn[:Data], citation_part: 'serial_number'})
+      # Remove any HTML tags, usually <br /> within the ISSN
+      issn_text = Loofah.scrub_fragment(CGI.unescapeHTML(issn[:Data]), :strip).to_text.gsub!(/\s/, " ")
+      detailed_text.merge({name: "ISSN", label: 'ISSN', value: issn_text, citation_part: 'serial_number'})
     else
       {}
     end
