@@ -24,7 +24,7 @@ ADD Gemfile Gemfile.lock .ruby-gemset ./
 RUN rm -rf tmp/cache/*
 
 # add necessary gems
-RUN jgem install bundler -v 2.1.4
+RUN jgem install bundler -v 2.4.7
 
 # see: https://github.com/jruby/jruby/issues/6475
 ENV JAVA_OPTS="--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED"
