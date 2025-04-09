@@ -63,7 +63,6 @@ class EDS::FacetList < EDS
     end
   end
 
-  PASSTHROUGH_FILTERS = [{'FilterAvailability' => 'Online'}]
   def merge_requested_facets facet_manifest
     # For some facets (not sure why), EDS does not include the selected facet in the returned list. Add them back here.
     # check each requested filter
@@ -84,24 +83,14 @@ class EDS::FacetList < EDS
           facet['AvailableFacetValues'].unshift formatted_option
         end
 
-      # Include these filters even though EDS doesn't use them.
-      elsif PASSTHROUGH_FILTERS.include?({requested_f['facet_id'] => requested_f['value']})
-        # add the facet
-        facet_manifest << {"Id" => requested_f['facet_id'],
-                            "Label" => requested_f['facet_id'],
-                            "AvailableFacetValues" => [formatted_option]
-        }
-
-      # Lexile range isn't returned as a facet, even if it was applied
+      # Add in requested facets that are not in the manifest
+      # Lexile range and Publication Year sometimes aren't returned as a facet, even if it was applied
       # search_response['SearchRequestGet']['SearchCriteriaWithActions']['FacetFiltersWithAction']
-      elsif requested_f['facet_id'] == 'RangeLexile'
+      else
         facet_manifest << {"Id" => requested_f['facet_id'],
-          "Label" => "Lexile Range",
+          "Label" => requested_f['facet_name'],
           "AvailableFacetValues" => [formatted_option]
         }
-
-      else
-        # Dont include requested filters not in the EDS list
       end
     end
     facet_manifest
