@@ -88,7 +88,7 @@ class EDS::FacetList < EDS
       # search_response['SearchRequestGet']['SearchCriteriaWithActions']['FacetFiltersWithAction']
       else
         facet_manifest << {"Id" => requested_f['facet_id'],
-          "Label" => requested_f['facet_name'],
+          "Label" => requested_f['facet_name'] || requested_f['facet_id'].to_s.titleize,
           "AvailableFacetValues" => [formatted_option]
         }
       end
