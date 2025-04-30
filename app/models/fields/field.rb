@@ -240,8 +240,11 @@ class Field
     return {} unless pages.present?
     if pages[:PageCount] == '1'
       pages = pages[:StartPage]
+    elsif pages[:PageCount].blank?
+      pages = pages[:StartPage] + '-'
     else
-      pages = "#{pages[:StartPage]}-#{pages[:StartPage].to_i + (pages[:PageCount].to_i - 1)}"
+      endpage = pages[:StartPage].to_i + (pages[:PageCount].to_i - 1)
+      pages = "#{pages[:StartPage]}-#{endpage}"
     end
     {name: 'pages', label: t('fields.pages'),
      value: pages, citation_part: 'pages'}.merge(detailed_text)
