@@ -237,7 +237,7 @@ class Field
 
   def pages
     pages = bib_entity.dig :PhysicalDescription, :Pagination
-    return {} unless pages.present?
+    return {} unless pages.present? && pages[:StartPage].present?
     if pages[:PageCount] == '1'
       pages = pages[:StartPage]
     elsif pages[:PageCount].blank?
