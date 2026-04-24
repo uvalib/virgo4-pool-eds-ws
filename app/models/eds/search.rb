@@ -19,7 +19,6 @@ class EDS::Search < EDS
     end
     ensure_login do
       $logger.debug "Request Params: #{params}"
-      $logger.debug "EDS Params: #{search_params}"
 
       s = search_params
       search_response = run_search s
@@ -27,6 +26,7 @@ class EDS::Search < EDS
       stats = search_response['SearchResult']['Statistics']
       total_hits = stats['TotalHits']
       search_time = stats['TotalSearchTime']
+      $logger.debug "EDS Params: #{search_params}\nStats: #{stats.inspect}"
 
       records = []
       if params['pagination']['rows'].to_i > 0
