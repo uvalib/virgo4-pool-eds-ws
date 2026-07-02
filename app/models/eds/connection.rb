@@ -104,10 +104,10 @@ module EDS::Connection
     end
   end
 
-  # EDS error codes: http://edswiki.ebscohost.com/API_Reference_Guide:_Error_Codes
+  # EDS error codes: https://developer.ebsco.com/eds-api/docs/response-and-error-codes
   INVALID_SESSION_CODES = %w(104 108 109 113 141).freeze
   NOT_FOUND_CODES = %w(132 135).freeze
-  MAX_RECORD_LIMIT_CODES = %w(139 138).freeze
+  MAX_RECORD_LIMIT_CODES = %w(138).freeze
 
   def check_session response
     response_code = response.code.to_s
