@@ -87,15 +87,15 @@ module EDS::Connection
       search_result[:elapsed_ms] = ms
       return search_result
 
+    rescue Net::OpenTimeout, Net::ReadTimeout => e
+      $logger.error e.message
+      self.error_message = "The connection to EBSCO has timed out. Please try again later."
+      self.status_code = 408
     rescue => e
       if e.message == 'retry'
         # catch a stale session?
         $logger.debug 'Retrying API call'
         return yield
-      elsif e.message == 'Net::ReadTimeout'
-        $logger.error e.message
-        self.error_message = "The connection to EBSCO has timed out. Please try again later."
-        self.status_code = 408
       else
         self.error_message = e.message
         self.status_code = 500
