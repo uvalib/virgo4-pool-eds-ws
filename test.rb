@@ -17,6 +17,8 @@ claims = {
 		canPlaceReserve:  '',
 		canBrowseReserve: '',
     useSIS:           '',
+		leoLocation:      '',
+		illiadCleared:    '',
 		role:             '',
 		authMethod:       ''
   }
@@ -128,6 +130,12 @@ scope do
 
   test 'Single Item' do
     get '/api/resource/a9h_8781893'
+    assert last_response.ok?
+    parsed_body = JSON.parse last_response.body
+    assert parsed_body.keys.include?("fields")
+  end
+  test 'Single Item with no title' do
+    get '/api/resource/eft_186045314'
     assert last_response.ok?
     parsed_body = JSON.parse last_response.body
     assert parsed_body.keys.include?("fields")

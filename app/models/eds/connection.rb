@@ -12,6 +12,9 @@ module EDS::Connection
   def lock
     @@lock ||= Concurrent::ReentrantReadWriteLock.new
   end
+  def auth_token
+    lock.with_read_lock {@@auth_token ||= nil}
+  end
   def session_token
     lock.with_read_lock {@@session_token ||= nil}
   end
@@ -19,17 +22,44 @@ module EDS::Connection
     lock.with_read_lock {@@guest_session_token ||= nil}
   end
 
+  # IP auth is used unless AUTH_SERVICE=uidauth, e.g. for local development
+  # outside of the registered IP range.
+  def uid_auth?
+    ENV['AUTH_SERVICE'] == 'uidauth'
+  end
+
+  # EDS_USER/EDS_PASSWORD are the UIDAuth account credentials.
+  # EDS_PROFILE is the Profile name.
+  def eds_user
+    ENV['EDS_USER'].presence || ENV['EDS_PROFILE']
+  end
+
   def login
     lock.with_write_lock do
 
       $logger.debug 'EDS Login'
+
+      @@auth_token = nil
+      if uid_auth?
+        auth = self.class.post('/authservice/rest/UIDAuth',
+                    body: {'UserId' => eds_user,
+                           'Password' => ENV['EDS_PASSWORD']
+                          }.to_json,
+                    headers: base_headers, max_retries: 0
+        )
+        if auth.success?
+          @@auth_token = auth['AuthToken']
+        else
+          $logger.error "Unable to get EDS Auth Token: #{auth.inspect}"
+        end
+      end
 
       session = self.class.post('/edsapi/rest/CreateSession',
                   body: {'Profile' => ENV['EDS_PROFILE'],
                          'Guest' => 'n',
                          'Org' => ENV['EDS_ORG']
                         }.to_json,
-                  headers: base_headers, max_retries: 0
+                  headers: login_headers, max_retries: 0
       )
       if session.success?
         @@session_token = session['SessionToken']
@@ -42,9 +72,8 @@ module EDS::Connection
                          'Guest' => 'y',
                          'Org' => ENV['EDS_ORG']
                         }.to_json,
-                  headers: base_headers, max_retries: 0
+                  headers: login_headers, max_retries: 0
                                )
-      @@guest_session_token = guest_session['SessionToken']
       if guest_session.success?
         @@guest_session_token = guest_session['SessionToken']
       else
@@ -59,20 +88,21 @@ module EDS::Connection
     }
   end
 
+  def login_headers
+    headers = base_headers
+    headers['x-authenticationToken'] = auth_token if auth_token
+    headers
+  end
+
   def auth_headers
-    { 'Accept' => 'application/json',
-      'Content-Type' => 'application/json',
-      'x-sessionToken' => session_token
-    }
+    login_headers.merge('x-sessionToken' => session_token)
   end
   def guest_auth_headers
-    { 'Accept' => 'application/json',
-      'Content-Type' => 'application/json',
-      'x-sessionToken' => guest_session_token
-    }
+    login_headers.merge('x-sessionToken' => guest_session_token)
   end
 
   def ensure_login
+    retried = false
     begin
       if session_token.nil?
         login
@@ -92,10 +122,15 @@ module EDS::Connection
       self.error_message = "The connection to EBSCO has timed out. Please try again later."
       self.status_code = 408
     rescue => e
-      if e.message == 'retry'
-        # catch a stale session?
+      if e.message == 'retry' && !retried
+        # stale session, check_session has already logged in again
         $logger.debug 'Retrying API call'
-        return yield
+        retried = true
+        retry
+      elsif e.message == 'retry'
+        self.error_message = 'Unable to establish a session with EBSCO. Please try again later.'
+        self.status_code = 500
+        $logger.error 'EDS session still invalid after login retry'
       else
         self.error_message = e.message
         self.status_code = 500
