@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/amazoncorretto:17-alpine3.18
+FROM public.ecr.aws/docker/library/amazoncorretto:21-alpine3.24
 
 # add necessary packages
 RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-certificates git && rm -rf /var/cache/apk/*
@@ -6,7 +6,7 @@ RUN apk update && apk upgrade && apk --no-cache add bash tzdata build-base ca-ce
 # install jruby
 ADD .ruby-version /tmp
 RUN apk --no-cache add jruby=~$(cat /tmp/.ruby-version | awk -F- '{print $2}')
-ENV PATH $PATH:/usr/share/jruby/bin
+ENV PATH=$PATH:/usr/share/jruby/bin
 
 # create the run user and group
 RUN addgroup --gid 18570 sse && adduser --uid 1984 docker -G sse -D
@@ -16,7 +16,7 @@ ENV TZ=UTC
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # specify home
-ENV APP_HOME /pool-eds-ws
+ENV APP_HOME=/pool-eds-ws
 WORKDIR $APP_HOME
 
 # copy the Gemfile into the image and temporarily set the working directory to where they are.
